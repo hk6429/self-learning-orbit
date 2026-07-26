@@ -20,11 +20,23 @@
         <div>
           <p class="eyebrow"><span></span> DANAi LEARNING LAB</p>
           <h1>自學星圖</h1>
-          <p class="subtitle">一站一世界，轉動你的學習宇宙。</p>
+          <p class="subtitle">13 座遊戲化學習網站，陪老師與家長找到適合的下一站。</p>
         </div>
-        <div class="orbit-status" aria-label="網站數量">
-          <strong id="site-count">13</strong>
-          <span>座學習星球</span>
+        <div class="masthead-tools">
+          <div class="orbit-status" aria-label="網站數量">
+            <strong id="site-count">13</strong>
+            <span>座學習星球</span>
+          </div>
+          <div class="quick-actions" aria-label="快速工具">
+            <button id="guide-open" class="quick-action primary" type="button" aria-label="幫我選一站">
+              <span aria-hidden="true">✦</span>
+              <span class="quick-label">幫我選一站</span>
+            </button>
+            <button id="overview-open" class="quick-action" type="button" aria-label="查看全部網站">
+              <span aria-hidden="true">▦</span>
+              <span class="quick-label">全部網站</span>
+            </button>
+          </div>
         </div>
       </header>
 
@@ -79,6 +91,11 @@
           <p id="info-description">
             走進古典文人的生命故事，以故事、漫畫與闖關方式認識作品背後的人。
           </p>
+          <div id="info-meta" class="info-meta" aria-label="網站使用資訊">
+            <span>國中以上</span>
+            <span>文學故事</span>
+            <span>建議 10–20 分鐘</span>
+          </div>
         </div>
         <a
           id="launch-link"
@@ -93,13 +110,60 @@
       </section>
 
       <footer class="footer-note">
-        <span>滑鼠左右移動／拖曳控制方向</span>
+        <span class="desktop-help">滑鼠左右移動／拖曳控制方向</span>
+        <span class="mobile-help">左右滑動選站，點一下暫停閱讀</span>
         <span class="footer-divider" aria-hidden="true"></span>
-        <span>鍵盤方向鍵也可以操作</span>
+        <span class="desktop-help">鍵盤方向鍵也可以操作</span>
         <span class="footer-divider" aria-hidden="true"></span>
-        <span id="visit-count" class="visit-count" aria-live="polite">到站 0</span>
+        <span id="visit-count" class="visit-count" aria-live="polite">新站啟航・到站 0</span>
       </footer>
     </main>
+
+    <dialog id="guide-dialog" class="portal-dialog guide-dialog" aria-labelledby="guide-title">
+      <div class="dialog-shell">
+        <button class="dialog-close" type="button" data-dialog-close aria-label="關閉快速選站">×</button>
+        <p class="dialog-eyebrow">QUICK GUIDE</p>
+        <h2 id="guide-title">今天想怎麼使用？</h2>
+        <p id="guide-lead" class="dialog-lead">先選身分，再用一個目標找到最適合的學習網站。</p>
+
+        <div id="guide-audience" class="choice-grid">
+          <button class="choice-card" type="button" data-audience="teacher">
+            <span aria-hidden="true">教</span>
+            <strong>我是老師</strong>
+            <small>找課堂活動或教師成長工具</small>
+          </button>
+          <button class="choice-card" type="button" data-audience="parent">
+            <span aria-hidden="true">家</span>
+            <strong>我是家長</strong>
+            <small>依孩子需要加強的能力選站</small>
+          </button>
+        </div>
+
+        <div id="guide-goals" class="guide-step" hidden>
+          <button id="guide-back" class="text-button" type="button">← 重新選擇身分</button>
+          <p class="step-label">想先解決哪一件事？</p>
+          <div id="goal-options" class="goal-options"></div>
+        </div>
+
+        <div id="guide-results" class="guide-step" hidden aria-live="polite">
+          <button id="goal-back" class="text-button" type="button">← 改選學習目標</button>
+          <p class="step-label">建議從這裡開始</p>
+          <div id="recommendation-list" class="recommendation-list"></div>
+        </div>
+        <p class="dialog-note">入口不建立帳號；選站後會在新分頁開啟，各站使用方式以站內說明為準。</p>
+      </div>
+    </dialog>
+
+    <dialog id="overview-dialog" class="portal-dialog overview-dialog" aria-labelledby="overview-title">
+      <div class="dialog-shell">
+        <button class="dialog-close" type="button" data-dialog-close aria-label="關閉全部網站">×</button>
+        <p class="dialog-eyebrow">ALL 13 WORLDS</p>
+        <h2 id="overview-title">全部學習網站</h2>
+        <p class="dialog-lead">不必等星軌轉一圈，一次比較年段、內容與使用方式。</p>
+        <div id="overview-grid" class="overview-grid"></div>
+        <p class="dialog-note">入口不建立帳號；選站後會在新分頁開啟，各站使用方式以站內說明為準。</p>
+      </div>
+    </dialog>
 
     <script src="./app.js"></script>
     <script>

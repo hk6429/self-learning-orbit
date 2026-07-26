@@ -5,6 +5,9 @@ const sites = [
     subject: "國文 × 文學",
     caption: "古典文人宇宙",
     description: "走進古典文人的生命故事，以故事、漫畫與闖關方式認識作品背後的人。",
+    stage: "國中以上",
+    mode: "文學故事",
+    duration: "建議 10–20 分鐘",
     url: "https://wenhao-xiaozhuan.pages.dev/",
     image: "./assets/previews/wenhao-xiaozhuan.webp",
   },
@@ -14,6 +17,9 @@ const sites = [
     subject: "閱讀 × 解謎",
     caption: "總編輯的最後一夜",
     description: "在限時情境與線索推理中完成密室任務，讓閱讀理解變成一場沉浸式冒險。",
+    stage: "國中",
+    mode: "閱讀解謎",
+    duration: "可分段使用",
     url: "https://tulou-escape.vercel.app/index.html",
     image: "./assets/previews/tulou-escape.webp",
   },
@@ -23,6 +29,9 @@ const sites = [
     subject: "國文 × 文言文",
     caption: "古人的解憂處方",
     description: "把古人的文字變成今日可理解、可運用的生活智慧，陪你讀懂文言也讀懂自己。",
+    stage: "國中～高中",
+    mode: "文言閱讀",
+    duration: "建議 15–20 分鐘",
     url: "https://wenyan-jieyou-zhan.pages.dev/",
     image: "./assets/previews/wenyan-jieyou-zhan.webp",
   },
@@ -32,6 +41,9 @@ const sites = [
     subject: "七個習慣 × RPG",
     caption: "選擇之劍",
     description: "以角色扮演與選擇題推進冒險，在關鍵抉擇中練習七個習慣與自我領導力。",
+    stage: "國中",
+    mode: "情境選擇",
+    duration: "建議 10–20 分鐘",
     url: "https://seven-habits-quest.hk6429.workers.dev/",
     image: "./assets/previews/seven-habits-quest.webp",
   },
@@ -41,6 +53,9 @@ const sites = [
     subject: "七個習慣 × 經營",
     caption: "打造你的習慣產線",
     description: "用工廠經營的方式累積好習慣，把抽象的自我管理轉化成看得見的成長。",
+    stage: "國中",
+    mode: "養成經營",
+    duration: "可分段使用",
     url: "https://habit-tycoon.pages.dev/",
     image: "./assets/previews/habit-tycoon.webp",
   },
@@ -50,6 +65,9 @@ const sites = [
     subject: "七個習慣 × 仙俠",
     caption: "仙俠七訣修習錄",
     description: "在仙俠修煉世界中鍛鍊選擇、目標與合作，把七個習慣化成一套心法。",
+    stage: "國中以上",
+    mode: "互動小說",
+    duration: "可分段使用",
     url: "https://fanren-lianxin.pages.dev/",
     image: "./assets/previews/fanren-lianxin.webp",
   },
@@ -59,6 +77,9 @@ const sites = [
     subject: "教師 × 專業成長",
     caption: "教師職涯模擬",
     description: "透過教師職涯中的真實選擇，探索專業判斷、班級經營與教育現場的多重挑戰。",
+    stage: "教師",
+    mode: "職涯模擬",
+    duration: "可分段使用",
     url: "https://teacher-tycoon.pages.dev/",
     image: "./assets/previews/teacher-tycoon.webp",
   },
@@ -68,6 +89,9 @@ const sites = [
     subject: "教師 × 導師實務",
     caption: "班級經營修練場",
     description: "以情境任務陪新手導師練習親師溝通、學生輔導與班級事件的臨場判斷。",
+    stage: "教師",
+    mode: "導師情境",
+    duration: "可分段使用",
     url: "https://xinshou-daoshi.pages.dev/",
     image: "./assets/previews/xinshou-daoshi.webp",
   },
@@ -77,6 +101,9 @@ const sites = [
     subject: "英文 × 單字",
     caption: "英文單字練功坊",
     description: "用對戰、練功與升級節奏複習英文單字，讓記憶不只是反覆抄寫。",
+    stage: "國小高年級～高中",
+    mode: "單字練習",
+    duration: "建議 10–15 分鐘",
     url: "https://vocab-duel.pages.dev/",
     image: "./assets/previews/vocab-duel.webp",
   },
@@ -86,6 +113,9 @@ const sites = [
     subject: "國文 × 字音字形",
     caption: "國語文答題對戰",
     description: "以答題對戰練習字音、字形與成語，逐步累積國語文基礎能力。",
+    stage: "國小～國中",
+    mode: "國語基本功",
+    duration: "建議 10–15 分鐘",
     url: "https://zizizhuji.pages.dev/",
     image: "./assets/previews/zizizhuji.webp",
   },
@@ -95,6 +125,9 @@ const sites = [
     subject: "數學 × 闖關",
     caption: "奧林帕斯數術神殿",
     description: "在神殿冒險中挑戰數學題目，讓推理、計算與成就感一起升級。",
+    stage: "國小～國中",
+    mode: "數學技能樹",
+    duration: "建議 10–20 分鐘",
     url: "https://bxws-math.pages.dev/",
     image: "./assets/previews/bxws-math.webp",
   },
@@ -104,6 +137,9 @@ const sites = [
     subject: "國文 × 歷屆試題",
     caption: "會考字形字音挑戰",
     description: "收錄歷屆基測與會考字音字形題，透過闖關與回饋建立考試辨識力。",
+    stage: "國中",
+    mode: "會考練習",
+    duration: "建議 10–15 分鐘",
     url: "https://xingyin-doushi.pages.dev/",
     image: "./assets/previews/xingyin-doushi.webp",
   },
@@ -113,6 +149,9 @@ const sites = [
     subject: "自然 × 練功",
     caption: "自然科英雄養成",
     description: "從國小到國中自然科，以任務、戰鬥與成長系統陪學生持續練習。",
+    stage: "國小～國中",
+    mode: "自然練習",
+    duration: "建議 10–20 分鐘",
     url: "https://science-hero.pages.dev/",
     image: "./assets/previews/science-hero.webp",
   },
@@ -124,6 +163,7 @@ const infoPanel = document.querySelector("#site-info");
 const titleElement = document.querySelector("#info-title");
 const descriptionElement = document.querySelector("#info-description");
 const subjectElement = document.querySelector("#info-subject");
+const metaElement = document.querySelector("#info-meta");
 const currentNumberElement = document.querySelector("#current-number");
 const totalNumberElement = document.querySelector("#total-number");
 const siteCountElement = document.querySelector("#site-count");
@@ -136,14 +176,49 @@ const playIcon = playToggle.querySelector(".play-icon");
 const playLabel = playToggle.querySelector(".play-label");
 const filterButtons = [...document.querySelectorAll(".filter-chip")];
 const visitCount = document.querySelector("#visit-count");
+const guideOpen = document.querySelector("#guide-open");
+const overviewOpen = document.querySelector("#overview-open");
+const guideDialog = document.querySelector("#guide-dialog");
+const overviewDialog = document.querySelector("#overview-dialog");
+const guideAudience = document.querySelector("#guide-audience");
+const guideGoals = document.querySelector("#guide-goals");
+const guideResults = document.querySelector("#guide-results");
+const guideBack = document.querySelector("#guide-back");
+const goalBack = document.querySelector("#goal-back");
+const goalOptions = document.querySelector("#goal-options");
+const recommendationList = document.querySelector("#recommendation-list");
+const overviewGrid = document.querySelector("#overview-grid");
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+const mobileViewport = window.matchMedia("(max-width: 640px)");
 
-const AUTO_SPEED = 0.00018;
+const DESKTOP_AUTO_SPEED = 0.00018;
+const MOBILE_AUTO_SPEED = 0.000125;
 const MAX_SPEED = 0.003;
 const FRAME_INTERVAL = 1000 / 30;
 const initialImageIndexes = new Set([0, 1, 2, 11, 12]);
 const cardElements = [];
 const cardStates = [];
+const guideOptions = {
+  teacher: {
+    label: "老師",
+    goals: [
+      { id: "language-class", label: "設計國語文課", indexes: [2, 1, 9] },
+      { id: "leadership-class", label: "帶自我領導力活動", indexes: [3, 4, 5] },
+      { id: "teacher-growth", label: "練習教師與導師實務", indexes: [6, 7] },
+      { id: "stem-practice", label: "安排數理英自主練習", indexes: [8, 10, 12] },
+    ],
+  },
+  parent: {
+    label: "家長",
+    goals: [
+      { id: "language-basics", label: "加強字音字形與成語", indexes: [9, 11] },
+      { id: "reading", label: "培養閱讀與文言理解", indexes: [0, 1, 2] },
+      { id: "math-science", label: "練習數學或自然", indexes: [10, 12] },
+      { id: "english", label: "複習英文單字", indexes: [8] },
+      { id: "self-leadership", label: "練習自律與自我管理", indexes: [3, 4, 5] },
+    ],
+  },
+};
 
 let activeGroup = "all";
 let visibleIndexes = sites.map((_, index) => index);
@@ -161,6 +236,8 @@ let lastPointerMoveAt = performance.now();
 let previousFrameAt = performance.now();
 let lastRenderedAt = 0;
 let userPaused = reducedMotion.matches;
+let readingHoldUntil = 0;
+let selectedAudience = null;
 
 try {
   userPaused = reducedMotion.matches || localStorage.getItem("self-learning-orbit:paused") === "true";
@@ -193,6 +270,123 @@ function trackEvent(name, value = "") {
     title: `${name}${value ? ` · ${value}` : ""}`,
     event: true,
   });
+}
+
+function getAutoSpeed() {
+  return mobileViewport.matches ? MOBILE_AUTO_SPEED : DESKTOP_AUTO_SPEED;
+}
+
+function isDialogOpen() {
+  return guideDialog.open || overviewDialog.open;
+}
+
+function openDialog(dialog) {
+  if (typeof dialog.showModal === "function") {
+    dialog.showModal();
+  } else {
+    dialog.setAttribute("open", "");
+  }
+}
+
+function closeDialog(dialog) {
+  if (typeof dialog.close === "function") {
+    dialog.close();
+  } else {
+    dialog.removeAttribute("open");
+  }
+}
+
+function siteDecisionTags(site) {
+  return [site.stage, site.mode, site.duration];
+}
+
+function renderDecisionTags(site) {
+  return siteDecisionTags(site).map((tag) => `<span>${tag}</span>`).join("");
+}
+
+function renderOverview() {
+  overviewGrid.innerHTML = sites
+    .map(
+      (site, index) => `
+        <a
+          class="overview-card"
+          href="${site.url}"
+          target="_blank"
+          rel="noopener noreferrer"
+          data-overview-index="${index}"
+        >
+          <img src="${site.image}" alt="${site.title}網站畫面" loading="lazy" decoding="async" />
+          <span class="overview-card-body">
+            <small>${site.subject}</small>
+            <strong>${site.title}</strong>
+            <span class="mini-meta">${renderDecisionTags(site)}</span>
+            <em>${site.description}</em>
+          </span>
+        </a>
+      `,
+    )
+    .join("");
+}
+
+function showAudienceStep() {
+  selectedAudience = null;
+  guideAudience.hidden = false;
+  guideGoals.hidden = true;
+  guideResults.hidden = true;
+}
+
+function showGoalStep(audience) {
+  selectedAudience = audience;
+  guideAudience.hidden = true;
+  guideGoals.hidden = false;
+  guideResults.hidden = true;
+  const option = guideOptions[audience];
+  goalOptions.innerHTML = option.goals
+    .map(
+      (goal) => `
+        <button class="goal-button" type="button" data-goal="${goal.id}">
+          <span>${goal.label}</span>
+          <strong aria-hidden="true">→</strong>
+        </button>
+      `,
+    )
+    .join("");
+  goalOptions.querySelector("button")?.focus();
+  trackEvent("guide-audience", audience);
+}
+
+function showRecommendations(goalId) {
+  const audience = guideOptions[selectedAudience];
+  const goal = audience?.goals.find((item) => item.id === goalId);
+  if (!goal) return;
+
+  guideGoals.hidden = true;
+  guideResults.hidden = false;
+  recommendationList.innerHTML = goal.indexes
+    .map((index, rank) => {
+      const site = sites[index];
+      return `
+        <a
+          class="recommendation-card"
+          href="${site.url}"
+          target="_blank"
+          rel="noopener noreferrer"
+          data-recommendation-index="${index}"
+        >
+          <span class="recommendation-rank">${String(rank + 1).padStart(2, "0")}</span>
+          <span>
+            <small>${site.subject}</small>
+            <strong>${site.title}</strong>
+            <span class="mini-meta">${renderDecisionTags(site)}</span>
+            <em>${site.description}</em>
+          </span>
+          <b aria-hidden="true">↗</b>
+        </a>
+      `;
+    })
+    .join("");
+  recommendationList.querySelector("a")?.focus();
+  trackEvent("guide-goal", `${selectedAudience}-${goalId}`);
 }
 
 function hydrateImage(card, eager = false) {
@@ -284,6 +478,7 @@ function setInfo(index, source = "orbit") {
   titleElement.textContent = site.title;
   descriptionElement.textContent = site.description;
   subjectElement.textContent = site.subject;
+  metaElement.innerHTML = renderDecisionTags(site);
   currentNumberElement.textContent = String(localIndex + 1).padStart(2, "0");
   totalNumberElement.textContent = String(visibleIndexes.length).padStart(2, "0");
   launchLink.href = site.url;
@@ -407,13 +602,13 @@ function animate(now) {
       velocity += difference * 0.00045 * delta;
       velocity *= 0.74;
     }
-  } else if (stillOnCard || userPaused || reducedMotion.matches) {
+  } else if (stillOnCard || now < readingHoldUntil || isDialogOpen() || userPaused || reducedMotion.matches) {
     velocity *= 0.72;
   } else {
     const autoDirection = pointerInside && now - lastPointerMoveAt < 700
       ? Math.sign(velocity || 1)
       : 1;
-    const autoSpeed = AUTO_SPEED * autoDirection;
+    const autoSpeed = getAutoSpeed() * autoDirection;
     velocity += (autoSpeed - velocity) * 0.08;
   }
 
@@ -523,7 +718,7 @@ nextButton.addEventListener("click", () => stepOrbit(1));
 
 playToggle.addEventListener("click", () => {
   userPaused = reducedMotion.matches ? true : !userPaused;
-  velocity = userPaused ? 0 : AUTO_SPEED;
+  velocity = userPaused ? 0 : getAutoSpeed();
   targetPosition = userPaused ? Math.round(position) : null;
   hintElement.textContent = userPaused ? "巡航已暫停" : "自動巡航中";
   try {
@@ -539,7 +734,63 @@ filterButtons.forEach((button) => {
   button.addEventListener("click", () => applyFilter(button.dataset.group));
 });
 
+infoPanel.addEventListener("pointerdown", (event) => {
+  if (event.pointerType === "touch" || mobileViewport.matches) {
+    readingHoldUntil = performance.now() + 8000;
+    hintElement.textContent = "已暫停 8 秒，慢慢閱讀";
+  }
+});
+
+guideOpen.addEventListener("click", () => {
+  showAudienceStep();
+  openDialog(guideDialog);
+  trackEvent("guide-open");
+});
+
+overviewOpen.addEventListener("click", () => {
+  openDialog(overviewDialog);
+  trackEvent("overview-open");
+});
+
+guideAudience.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-audience]");
+  if (button) showGoalStep(button.dataset.audience);
+});
+
+goalOptions.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-goal]");
+  if (button) showRecommendations(button.dataset.goal);
+});
+
+guideBack.addEventListener("click", showAudienceStep);
+goalBack.addEventListener("click", () => showGoalStep(selectedAudience));
+
+recommendationList.addEventListener("click", (event) => {
+  const link = event.target.closest("[data-recommendation-index]");
+  if (!link) return;
+  const site = sites[Number(link.dataset.recommendationIndex)];
+  trackEvent("guide-site-click", site.title);
+});
+
+overviewGrid.addEventListener("click", (event) => {
+  const link = event.target.closest("[data-overview-index]");
+  if (!link) return;
+  const site = sites[Number(link.dataset.overviewIndex)];
+  trackEvent("overview-site-click", site.title);
+});
+
+document.querySelectorAll("[data-dialog-close]").forEach((button) => {
+  button.addEventListener("click", () => closeDialog(button.closest("dialog")));
+});
+
+[guideDialog, overviewDialog].forEach((dialog) => {
+  dialog.addEventListener("click", (event) => {
+    if (event.target === dialog) closeDialog(dialog);
+  });
+});
+
 document.addEventListener("keydown", (event) => {
+  if (isDialogOpen()) return;
   if (event.key === "ArrowLeft") {
     event.preventDefault();
     stepOrbit(-1);
@@ -591,13 +842,15 @@ async function loadVisitCount() {
     if (!response.ok) return;
     const data = await response.json();
     const count = Number(String(data.count ?? "0").replace(/[\s,]/g, "")) || 0;
-    visitCount.textContent = `到站 ${count.toLocaleString("zh-TW")}`;
+    const label = count < 10 ? "新站啟航・到站" : "到站";
+    visitCount.textContent = `${label} ${count.toLocaleString("zh-TW")}`;
   } catch {
-    visitCount.textContent = "到站 0";
+    visitCount.textContent = "新站啟航・到站 0";
   }
 }
 
 createCards();
+renderOverview();
 siteCountElement.textContent = String(sites.length);
 totalNumberElement.textContent = String(sites.length).padStart(2, "0");
 setInfo(0, "initial");
