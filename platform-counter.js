@@ -21,6 +21,7 @@
           bottom: 14px;
           z-index: 2147483000;
           display: block;
+          pointer-events: none;
           color-scheme: dark;
           font-family: -apple-system, BlinkMacSystemFont, "PingFang TC",
             "Noto Sans TC", system-ui, sans-serif;

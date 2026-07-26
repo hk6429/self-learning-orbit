@@ -11,6 +11,7 @@ test("共用計數器固定在右下角並顯示三項數字", () => {
   assert.match(script, /position:\s*fixed/);
   assert.match(script, /right:\s*14px/);
   assert.match(script, /bottom:\s*14px/);
+  assert.match(script, /pointer-events:\s*none/);
   assert.match(script, /目前在線/);
   assert.match(script, /今日到訪/);
   assert.match(script, /累積到訪/);
