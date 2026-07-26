@@ -32,3 +32,41 @@ BEGIN
   VALUES (NEW.day_key, 1)
   ON CONFLICT(day_key) DO UPDATE SET visits = visits + 1;
 END;
+
+CREATE TABLE IF NOT EXISTS platform_sessions (
+  site_id TEXT NOT NULL,
+  session_id TEXT NOT NULL,
+  first_seen INTEGER NOT NULL,
+  last_seen INTEGER NOT NULL,
+  day_key TEXT NOT NULL,
+  PRIMARY KEY (site_id, session_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_platform_sessions_site_last_seen
+ON platform_sessions (site_id, last_seen);
+
+CREATE TABLE IF NOT EXISTS platform_site_stats (
+  site_id TEXT PRIMARY KEY,
+  total_visits INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS platform_daily_stats (
+  site_id TEXT NOT NULL,
+  day_key TEXT NOT NULL,
+  visits INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (site_id, day_key)
+);
+
+CREATE TRIGGER IF NOT EXISTS platform_sessions_increment_stats
+AFTER INSERT ON platform_sessions
+BEGIN
+  INSERT INTO platform_site_stats (site_id, total_visits)
+  VALUES (NEW.site_id, 1)
+  ON CONFLICT(site_id) DO UPDATE
+  SET total_visits = total_visits + 1;
+
+  INSERT INTO platform_daily_stats (site_id, day_key, visits)
+  VALUES (NEW.site_id, NEW.day_key, 1)
+  ON CONFLICT(site_id, day_key) DO UPDATE
+  SET visits = visits + 1;
+END;
