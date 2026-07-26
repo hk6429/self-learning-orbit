@@ -2,7 +2,11 @@
 
 大乃老師遊戲化自學網站的滿版 3D 入口。使用者可用滑鼠方向、拖曳、按鈕或鍵盤方向鍵轉動卡片星軌；停留時查看網站說明，點擊卡片後在新分頁開啟目標網站。
 
-正式網站：[https://self-learning-orbit.vercel.app](https://self-learning-orbit.vercel.app)
+正式網站（三平台同步）：
+
+- Cloudflare Pages：[https://self-learning-orbit.pages.dev](https://self-learning-orbit.pages.dev)
+- Vercel：[https://self-learning-orbit.vercel.app](https://self-learning-orbit.vercel.app)
+- Netlify：[https://self-learning-orbit.netlify.app](https://self-learning-orbit.netlify.app)
 
 ## 功能
 
@@ -39,7 +43,7 @@ npm run check
 | 工具箱 | 檔案積木 | 必要 | 保存經驗收的網站畫面 | 公開網站 → WebP 縮圖 | `assets/previews/` | 13 張截圖分階段載入 |
 | 工具箱 | 連線積木 | 必要 | 記錄匿名到站與互動數據 | 頁面事件 → GoatCounter | 前端匿名事件 | 失敗不影響入口功能 |
 | 地基 | 版本控制積木 | 必要 | 保存與回溯原型 | 專案檔案 → 可追蹤版本 | Git | 無機密、文件完整 |
-| 地基 | 部署積木 | 必要 | 對外發布入口網站 | 靜態網站 → 公開網址 | Vercel | production 可存取 |
+| 地基 | 部署積木 | 必要 | 對外發布入口網站 | 靜態網站 → 公開網址 | Cloudflare Pages / Vercel / Netlify | 三個 production 可存取 |
 
 ```mermaid
 flowchart LR
