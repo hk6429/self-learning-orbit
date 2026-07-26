@@ -61,6 +61,14 @@ test("互動與無障礙合約存在", () => {
   assert.match(app, /sessionStorage\.getItem\("self-learning-orbit:visit-session"\)/);
 });
 
+test("公開計數器位於全部網站按鈕右側並對齊底線", () => {
+  assert.match(
+    html,
+    /class="masthead-action-row"[\s\S]*id="overview-open"[\s\S]*data-visitor-stats/,
+  );
+  assert.match(css, /\.masthead-action-row\s*\{[\s\S]*align-items:\s*flex-end/);
+});
+
 test("老師與家長推薦流程皆有可用目標", () => {
   assert.match(app, /teacher: \{/);
   assert.match(app, /parent: \{/);
