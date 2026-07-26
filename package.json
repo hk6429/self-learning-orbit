@@ -1,0 +1,13 @@
+{
+  "name": "self-learning-orbit",
+  "version": "1.0.0",
+  "private": true,
+  "description": "大乃老師遊戲化自學網站的 3D 星圖入口",
+  "scripts": {
+    "check": "node --check app.js && npm test",
+    "test": "node --test test/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

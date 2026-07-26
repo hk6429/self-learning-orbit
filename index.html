@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="大乃老師的遊戲化自學網站入口，以 3D 星軌卡片快速探索國文、英文、數學、自然、自我領導與教師成長網站。"
+    />
+    <title>自學星圖｜大乃老師的遊戲化學習宇宙</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="ambient ambient-one" aria-hidden="true"></div>
+    <div class="ambient ambient-two" aria-hidden="true"></div>
+    <canvas id="starfield" aria-hidden="true"></canvas>
+
+    <main class="portal-shell">
+      <header class="masthead">
+        <div>
+          <p class="eyebrow"><span></span> DANAi LEARNING LAB</p>
+          <h1>自學星圖</h1>
+          <p class="subtitle">一站一世界，轉動你的學習宇宙。</p>
+        </div>
+        <div class="orbit-status" aria-label="網站數量">
+          <strong id="site-count">13</strong>
+          <span>座學習星球</span>
+        </div>
+      </header>
+
+      <section
+        id="orbit-stage"
+        class="orbit-stage"
+        aria-label="遊戲化自學網站輪播"
+        aria-roledescription="3D 轉輪"
+      >
+        <nav class="category-filter" aria-label="網站分類">
+          <button class="filter-chip is-selected" type="button" data-group="all" aria-pressed="true">全部</button>
+          <button class="filter-chip" type="button" data-group="language" aria-pressed="false">國語文</button>
+          <button class="filter-chip" type="button" data-group="leadership" aria-pressed="false">自我領導</button>
+          <button class="filter-chip" type="button" data-group="teacher" aria-pressed="false">教師成長</button>
+          <button class="filter-chip" type="button" data-group="stem" aria-pressed="false">數理英</button>
+        </nav>
+
+        <div class="orbit-line orbit-line-outer" aria-hidden="true"></div>
+        <div class="orbit-line orbit-line-inner" aria-hidden="true"></div>
+        <div id="card-orbit" class="card-orbit"></div>
+
+        <button class="orbit-control previous" type="button" aria-label="上一個網站">
+          <span aria-hidden="true">←</span>
+        </button>
+        <button class="orbit-control next" type="button" aria-label="下一個網站">
+          <span aria-hidden="true">→</span>
+        </button>
+        <button
+          id="play-toggle"
+          class="play-toggle"
+          type="button"
+          aria-label="暫停自動巡航"
+          aria-pressed="false"
+        >
+          <span class="play-icon" aria-hidden="true">Ⅱ</span>
+          <span class="play-label">暫停巡航</span>
+        </button>
+      </section>
+
+      <section id="site-info" class="site-info" aria-live="polite">
+        <div class="info-index" aria-hidden="true">
+          <span id="current-number">01</span>
+          <i></i>
+          <span id="total-number">13</span>
+        </div>
+        <div class="info-copy">
+          <div class="info-labels">
+            <span id="info-subject" class="subject-pill">國文 × 文學</span>
+            <span id="info-hint" class="motion-hint">移動滑鼠，轉動星軌</span>
+          </div>
+          <h2 id="info-title">文豪笑傳</h2>
+          <p id="info-description">
+            走進古典文人的生命故事，以故事、漫畫與闖關方式認識作品背後的人。
+          </p>
+        </div>
+        <a
+          id="launch-link"
+          class="launch-link"
+          href="https://wenhao-xiaozhuan.pages.dev/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span>進入這座星球</span>
+          <strong aria-hidden="true">↗</strong>
+        </a>
+      </section>
+
+      <footer class="footer-note">
+        <span>滑鼠左右移動／拖曳控制方向</span>
+        <span class="footer-divider" aria-hidden="true"></span>
+        <span>鍵盤方向鍵也可以操作</span>
+        <span class="footer-divider" aria-hidden="true"></span>
+        <span id="visit-count" class="visit-count" aria-live="polite">到站 0</span>
+      </footer>
+    </main>
+
+    <script src="./app.js"></script>
+    <script>
+      window.goatcounter = { path: () => location.host + "/" };
+    </script>
+    <script data-goatcounter="https://hk6429.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+  </body>
+</html>
