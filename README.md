@@ -2,6 +2,8 @@
 
 大乃老師遊戲化自學網站的滿版 3D 入口。使用者可用滑鼠方向、拖曳、按鈕或鍵盤方向鍵轉動卡片星軌；停留時查看網站說明，點擊卡片後在新分頁開啟目標網站。
 
+正式網站：[https://self-learning-orbit.vercel.app](https://self-learning-orbit.vercel.app)
+
 ## 功能
 
 - 13 個遊戲化自學網站，使用實際網站畫面。
@@ -60,7 +62,7 @@ self-learning-orbit/
 │   └── portal.test.mjs
 └── assets/
     └── previews/
-        └── *.png
+        └── *.webp
 ```
 
 ## 網址資料說明
