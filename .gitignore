@@ -1,3 +1,4 @@
 .vercel/
+.wrangler/
 artifact-*.png
 .DS_Store
