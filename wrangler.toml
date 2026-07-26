@@ -1,0 +1,8 @@
+name = "self-learning-orbit"
+compatibility_date = "2026-07-15"
+pages_build_output_dir = "."
+
+[[d1_databases]]
+binding = "PRESENCE_DB"
+database_name = "self-learning-orbit-presence"
+database_id = "c6b41349-a56e-4734-b7f1-7efbde59b17e"

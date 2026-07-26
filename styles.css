@@ -134,6 +134,85 @@ h1 {
   letter-spacing: 0.13em;
 }
 
+.visitor-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(74px, 1fr));
+  width: min(100%, 330px);
+  margin-top: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(104, 228, 255, 0.2);
+  border-radius: 14px;
+  background: rgba(9, 9, 22, 0.64);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(12px);
+}
+
+.visitor-stats p {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  padding: 7px 10px 6px;
+  text-align: center;
+}
+
+.visitor-stats p + p {
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.visitor-stats strong {
+  color: var(--ink);
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.visitor-stats p:first-child strong {
+  color: var(--cyan);
+}
+
+.visitor-stats p span {
+  color: var(--muted);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+}
+
+.visitor-stats i {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  margin-right: 5px;
+  border-radius: 50%;
+  background: #73f5b3;
+  box-shadow: 0 0 8px rgba(115, 245, 179, 0.8);
+  vertical-align: 1px;
+}
+
+.visitor-stats > small {
+  grid-column: 1 / -1;
+  padding: 4px 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  color: #737184;
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+.visitor-stats.has-error i {
+  background: #827f90;
+  box-shadow: none;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .orbit-status {
   display: flex;
   align-items: baseline;
@@ -609,11 +688,6 @@ h1 {
   text-transform: uppercase;
 }
 
-.visit-count {
-  color: var(--gold);
-  font-variant-numeric: tabular-nums;
-}
-
 .footer-divider {
   width: 3px;
   height: 3px;
@@ -1030,6 +1104,30 @@ h1 {
     letter-spacing: 0.05em;
   }
 
+  .visitor-stats {
+    grid-template-columns: repeat(3, minmax(58px, 1fr));
+    width: min(100%, 220px);
+    margin-top: 8px;
+  }
+
+  .visitor-stats p {
+    padding: 5px 4px 4px;
+  }
+
+  .visitor-stats strong {
+    font-size: 13px;
+  }
+
+  .visitor-stats p span {
+    font-size: 8px;
+    letter-spacing: 0.02em;
+  }
+
+  .visitor-stats > small {
+    padding-block: 3px;
+    font-size: 7px;
+  }
+
   .orbit-status span {
     display: none;
   }
@@ -1189,6 +1287,10 @@ h1 {
 
   .subtitle {
     display: none;
+  }
+
+  .visitor-stats {
+    margin-top: 7px;
   }
 
   .site-info {

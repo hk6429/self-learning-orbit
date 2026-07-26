@@ -19,6 +19,7 @@
 - WebP 縮圖分階段載入，首屏只載入中央附近 5 張。
 - 支援 `prefers-reduced-motion`。
 - GoatCounter 匿名到站統計與必要互動事件，不蒐集個人資料。
+- 頁面直接顯示目前在線、今日到訪與累積到訪；以匿名工作階段計數，不使用帳號、Cookie、IP 或個人資料。
 
 ## 本機預覽
 
@@ -59,9 +60,15 @@ flowchart LR
 
 ```text
 self-learning-orbit/
+├── functions/api/
+│   ├── _presence-core.js
+│   └── presence.js
 ├── index.html
 ├── styles.css
 ├── app.js
+├── schema.sql
+├── wrangler.toml
+├── _routes.json
 ├── package.json
 ├── README.md
 ├── test/
@@ -70,6 +77,14 @@ self-learning-orbit/
     └── previews/
         └── *.webp
 ```
+
+## 公開計數口徑
+
+- 目前在線：最近 5 分鐘內仍有活動的匿名工作階段。
+- 今日到訪：依台灣時間計算，當日首次開啟的匿名工作階段。
+- 累積到訪：自 2026 年 7 月 27 日啟用後的匿名工作階段總數。
+- 同一分頁重新整理不重複累加；不同分頁或瀏覽器會視為不同工作階段。
+- 三個正式鏡像共用 Cloudflare Pages Function 與獨立 D1 資料庫，畫面數字一致。
 
 ## 網址資料說明
 

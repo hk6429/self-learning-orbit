@@ -53,7 +53,12 @@ test("互動與無障礙合約存在", () => {
   assert.match(app, /MOBILE_AUTO_SPEED = 0\.000125/);
   assert.match(app, /readingHoldUntil = performance\.now\(\) \+ 8000/);
   assert.match(html, /左右滑動選站，點一下暫停閱讀/);
-  assert.match(html, /新站啟航・到站 0/);
+  assert.match(html, /data-visitor-count="online"/);
+  assert.match(html, /data-visitor-count="today"/);
+  assert.match(html, /data-visitor-count="total"/);
+  assert.match(html, /匿名統計・自 2026\/7\/27 起/);
+  assert.match(app, /self-learning-orbit\.pages\.dev\/api\/presence/);
+  assert.match(app, /sessionStorage\.getItem\("self-learning-orbit:visit-session"\)/);
 });
 
 test("老師與家長推薦流程皆有可用目標", () => {

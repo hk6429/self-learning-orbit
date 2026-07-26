@@ -175,7 +175,6 @@ const playToggle = document.querySelector("#play-toggle");
 const playIcon = playToggle.querySelector(".play-icon");
 const playLabel = playToggle.querySelector(".play-label");
 const filterButtons = [...document.querySelectorAll(".filter-chip")];
-const visitCount = document.querySelector("#visit-count");
 const guideOpen = document.querySelector("#guide-open");
 const overviewOpen = document.querySelector("#overview-open");
 const guideDialog = document.querySelector("#guide-dialog");
@@ -835,18 +834,89 @@ function drawStarfield() {
   }
 }
 
-async function loadVisitCount() {
+function startPresenceCounter() {
+  const visitorStats = document.querySelector("[data-visitor-stats]");
+  if (!visitorStats) return;
+
+  const countElements = Object.fromEntries(
+    [...visitorStats.querySelectorAll("[data-visitor-count]")].map((element) => [
+      element.dataset.visitorCount,
+      element,
+    ]),
+  );
+  const statusElement = visitorStats.querySelector("[data-visitor-status]");
+  const numberFormatter = new Intl.NumberFormat("zh-TW");
+  const host = window.location.hostname;
+  const usesLocalApi =
+    host === "self-learning-orbit.pages.dev" ||
+    host.endsWith(".self-learning-orbit.pages.dev") ||
+    host === "localhost" ||
+    host === "127.0.0.1";
+  const endpoint = usesLocalApi
+    ? "/api/presence"
+    : "https://self-learning-orbit.pages.dev/api/presence";
+  const storageKey = "self-learning-orbit:visit-session";
+  let sessionId;
+  let requestPending = false;
+  let lastRequestAt = 0;
+
   try {
-    const path = encodeURIComponent(`${location.host}/`);
-    const response = await fetch(`https://hk6429.goatcounter.com/counter/${path}.json`);
-    if (!response.ok) return;
-    const data = await response.json();
-    const count = Number(String(data.count ?? "0").replace(/[\s,]/g, "")) || 0;
-    const label = count < 10 ? "新站啟航・到站" : "到站";
-    visitCount.textContent = `${label} ${count.toLocaleString("zh-TW")}`;
+    sessionId = sessionStorage.getItem("self-learning-orbit:visit-session");
   } catch {
-    visitCount.textContent = "新站啟航・到站 0";
+    // A temporary identifier still lets the public counter work when storage is unavailable.
   }
+
+  if (!sessionId) {
+    sessionId =
+      typeof crypto.randomUUID === "function"
+        ? crypto.randomUUID()
+        : `visit_${Date.now()}_${Math.random().toString(36).slice(2, 14)}`;
+    try {
+      sessionStorage.setItem(storageKey, sessionId);
+    } catch {
+      // Do not block the portal when privacy settings disable session storage.
+    }
+  }
+
+  const updatePresence = async () => {
+    if (requestPending || document.hidden) return;
+
+    requestPending = true;
+    lastRequestAt = Date.now();
+
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId }),
+      });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+      const stats = await response.json();
+      if (!stats.ok) throw new Error(stats.error || "presence_unavailable");
+
+      for (const key of ["online", "today", "total"]) {
+        countElements[key].textContent = numberFormatter.format(stats[key]);
+      }
+
+      visitorStats.classList.remove("has-error");
+      statusElement.textContent = `目前在線 ${stats.online} 人，今日到訪 ${stats.today} 人，累積到訪 ${stats.total} 人`;
+    } catch {
+      visitorStats.classList.add("has-error");
+      statusElement.textContent = "即時到訪統計暫時無法連線";
+    } finally {
+      requestPending = false;
+    }
+  };
+
+  updatePresence();
+  window.setInterval(updatePresence, 2 * 60 * 1000);
+
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && Date.now() - lastRequestAt > 60_000) {
+      updatePresence();
+    }
+  });
 }
 
 createCards();
@@ -857,7 +927,7 @@ setInfo(0, "initial");
 updatePlayToggle();
 drawStarfield();
 renderOrbit();
-loadVisitCount();
+startPresenceCounter();
 requestAnimationFrame(animate);
 window.addEventListener("resize", () => {
   drawStarfield();
