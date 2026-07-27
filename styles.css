@@ -254,8 +254,15 @@ h1 {
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.04em;
+  text-decoration: none;
   cursor: pointer;
   backdrop-filter: blur(12px);
+}
+
+.quick-action.passport {
+  border-color: rgba(255, 212, 134, 0.34);
+  color: var(--gold);
+  background: rgba(255, 212, 134, 0.08);
 }
 
 .quick-action.primary {
@@ -1177,6 +1184,10 @@ h1 {
 
   #guide-open::after {
     content: "選站";
+  }
+
+  #passport-link::after {
+    content: "護照";
   }
 
   #overview-open::after {

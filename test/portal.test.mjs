@@ -19,6 +19,13 @@ test("入口包含分類、快速選站、總覽、暫停與 13 個網站", () =
   assert.equal(new Set(siteUrls).size, 13);
 });
 
+test("幫我選一站左側提供自學複利護照安全外連", () => {
+  assert.match(
+    html,
+    /href="https:\/\/self-learning-passport\.pages\.dev\/"[\s\S]*target="_blank"[\s\S]*rel="noopener noreferrer"[\s\S]*>[\s\S]*自學複利護照[\s\S]*<\/a>[\s\S]*id="guide-open"/,
+  );
+});
+
 test("13 座網站都有年段、玩法與建議時間", () => {
   assert.equal((app.match(/\n    stage: "/g) ?? []).length, 13);
   assert.equal((app.match(/\n    mode: "/g) ?? []).length, 13);
