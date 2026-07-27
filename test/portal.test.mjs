@@ -61,12 +61,13 @@ test("互動與無障礙合約存在", () => {
   assert.match(app, /sessionStorage\.getItem\("self-learning-orbit:visit-session"\)/);
 });
 
-test("公開計數器位於全部網站按鈕右側並對齊底線", () => {
+test("公開計數器固定在畫面右下角且不攔截操作", () => {
+  assert.match(html, /<\/main>[\s\S]*data-visitor-stats/);
   assert.match(
-    html,
-    /class="masthead-action-row"[\s\S]*id="overview-open"[\s\S]*data-visitor-stats/,
+    css,
+    /\.visitor-stats\s*\{[\s\S]*position:\s*fixed;[\s\S]*right:\s*max\(14px,\s*env\(safe-area-inset-right\)\);[\s\S]*bottom:\s*max\(14px,\s*env\(safe-area-inset-bottom\)\);/,
   );
-  assert.match(css, /\.masthead-action-row\s*\{[\s\S]*align-items:\s*flex-end/);
+  assert.match(css, /\.visitor-stats\s*\{[\s\S]*pointer-events:\s*none/);
 });
 
 test("老師與家長推薦流程皆有可用目標", () => {

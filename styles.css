@@ -142,6 +142,10 @@ h1 {
 }
 
 .visitor-stats {
+  position: fixed;
+  right: max(14px, env(safe-area-inset-right));
+  bottom: max(14px, env(safe-area-inset-bottom));
+  z-index: 70;
   display: grid;
   grid-template-columns: repeat(3, minmax(74px, 1fr));
   width: min(100%, 330px);
@@ -152,6 +156,7 @@ h1 {
   background: rgba(9, 9, 22, 0.64);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(12px);
+  pointer-events: none;
 }
 
 .visitor-stats p {
