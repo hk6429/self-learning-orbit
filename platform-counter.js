@@ -11,7 +11,7 @@
   const mount = () => {
     const host = document.createElement("aside");
     host.id = "danai-public-counter";
-    host.setAttribute("aria-label", "網站即時到訪統計");
+    host.setAttribute("aria-label", "自學星圖導覽與網站即時到訪統計");
     const shadow = host.attachShadow({ mode: "open" });
     shadow.innerHTML = `
       <style>
@@ -20,11 +20,54 @@
           right: 14px;
           bottom: 14px;
           z-index: 2147483000;
-          display: block;
+          display: grid;
+          justify-items: end;
+          gap: 8px;
           pointer-events: none;
           color-scheme: dark;
           font-family: -apple-system, BlinkMacSystemFont, "PingFang TC",
             "Noto Sans TC", system-ui, sans-serif;
+        }
+        .orbit-home {
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          min-height: 40px;
+          padding: 0 13px;
+          border: 1px solid rgba(104, 228, 255, 0.5);
+          border-radius: 999px;
+          background: rgba(7, 9, 22, 0.9);
+          box-shadow: 0 8px 28px rgba(0, 0, 0, 0.42);
+          color: #f7f6ff;
+          text-decoration: none;
+          pointer-events: auto;
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
+          transition:
+            border-color 160ms ease,
+            background 160ms ease,
+            transform 160ms ease;
+        }
+        .orbit-home:hover {
+          border-color: #68e4ff;
+          background: rgba(16, 25, 47, 0.96);
+          transform: translateY(-2px);
+        }
+        .orbit-home:focus-visible {
+          outline: 3px solid rgba(104, 228, 255, 0.48);
+          outline-offset: 3px;
+        }
+        .orbit-home b {
+          color: #68e4ff;
+          font-size: 18px;
+          font-weight: 400;
+          line-height: 1;
+        }
+        .orbit-home span {
+          color: #f7f6ff;
+          font-size: 12px;
+          font-weight: 700;
+          letter-spacing: 0.08em;
         }
         .counter {
           display: grid;
@@ -102,6 +145,10 @@
           .counter {
             width: 198px;
           }
+          .orbit-home {
+            min-height: 38px;
+            padding-inline: 12px;
+          }
           p {
             padding-inline: 3px;
           }
@@ -110,6 +157,15 @@
           }
         }
       </style>
+      <a
+        class="orbit-home"
+        href="https://self-learning-orbit.pages.dev/"
+        target="_self"
+        aria-label="回到自學星圖總覽"
+      >
+        <b aria-hidden="true">✦</b>
+        <span>自學星圖</span>
+      </a>
       <div class="counter">
         <p><strong data-count="online">—</strong><span><i></i>目前在線</span></p>
         <p><strong data-count="today">—</strong><span>今日到訪</span></p>

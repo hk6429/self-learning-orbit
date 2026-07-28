@@ -23,3 +23,11 @@ test("共用計數器撤除舊 GoatCounter 顯示並保留匿名工作階段", (
   assert.match(script, /platform-presence/);
   assert.doesNotMatch(script, /document\.cookie/);
 });
+
+test("共用元件提供回到自學星圖的清楚入口", () => {
+  assert.match(script, /href="https:\/\/self-learning-orbit\.pages\.dev\/"/);
+  assert.match(script, /class="orbit-home"/);
+  assert.match(script, /aria-label="回到自學星圖總覽"/);
+  assert.match(script, /<span>自學星圖<\/span>/);
+  assert.match(script, /\.orbit-home\s*\{[\s\S]*pointer-events:\s*auto/);
+});
