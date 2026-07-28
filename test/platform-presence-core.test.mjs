@@ -9,10 +9,11 @@ import {
   isValidSessionId,
 } from "../functions/api/_platform-presence-core.js";
 
-test("共用服務只接受 13 座自學平台", () => {
-  assert.equal(PLATFORM_IDS.size, 13);
+test("共用服務只接受 14 座自學平台", () => {
+  assert.equal(PLATFORM_IDS.size, 14);
   assert.equal(PLATFORM_IDS.has("wenhao-xiaozhuan"), true);
   assert.equal(PLATFORM_IDS.has("science-hero"), true);
+  assert.equal(PLATFORM_IDS.has("reading-expedition"), true);
   assert.equal(PLATFORM_IDS.has("self-learning-orbit"), false);
 });
 
@@ -37,6 +38,13 @@ test("平台來源必須和站點識別碼相符", () => {
       "https://wenhao-xiaozhuan.pages.dev",
     ),
     null,
+  );
+  assert.equal(
+    isAllowedPlatformOrigin(
+      "reading-expedition",
+      "https://reading-expedition.netlify.app",
+    ),
+    "https://reading-expedition.netlify.app",
   );
   assert.equal(
     isAllowedPlatformOrigin("zizizhuji", "http://localhost:8788"),

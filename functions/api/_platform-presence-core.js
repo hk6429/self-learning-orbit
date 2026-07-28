@@ -66,6 +66,11 @@ const platformHosts = {
     "science-hero-blue.vercel.app",
     "science-hero.netlify.app",
   ],
+  "reading-expedition": [
+    "reading-expedition-2u1.pages.dev",
+    "reading-expedition.vercel.app",
+    "reading-expedition.netlify.app",
+  ],
 };
 
 export const PLATFORM_IDS = new Set(Object.keys(platformHosts));

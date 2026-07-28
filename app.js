@@ -155,6 +155,18 @@ const sites = [
     url: "https://science-hero.pages.dev/",
     image: "./assets/previews/science-hero.webp",
   },
+  {
+    title: "梁山閱征記",
+    group: "language",
+    subject: "國文 × 素養閱讀",
+    caption: "每天十分鐘的閱讀遠征",
+    description: "從世界、科學與人文選一篇，以理解、推論與文證三層任務讀懂內容，逐步修築自己的萬卷浮城。",
+    stage: "國中",
+    mode: "素養閱讀",
+    duration: "建議 6–10 分鐘",
+    url: "https://reading-expedition-2u1.pages.dev/",
+    image: "./assets/previews/reading-expedition.webp",
+  },
 ];
 
 const stage = document.querySelector("#orbit-stage");
@@ -201,7 +213,7 @@ const guideOptions = {
   teacher: {
     label: "老師",
     goals: [
-      { id: "language-class", label: "設計國語文課", indexes: [2, 1, 9] },
+      { id: "language-class", label: "設計國語文課", indexes: [13, 2, 1] },
       { id: "leadership-class", label: "帶自我領導力活動", indexes: [3, 4, 5] },
       { id: "teacher-growth", label: "練習教師與導師實務", indexes: [6, 7] },
       { id: "stem-practice", label: "安排數理英自主練習", indexes: [8, 10, 12] },
@@ -211,7 +223,7 @@ const guideOptions = {
     label: "家長",
     goals: [
       { id: "language-basics", label: "加強字音字形與成語", indexes: [9, 11] },
-      { id: "reading", label: "培養閱讀與文言理解", indexes: [0, 1, 2] },
+      { id: "reading", label: "培養閱讀與文言理解", indexes: [13, 0, 2] },
       { id: "math-science", label: "練習數學或自然", indexes: [10, 12] },
       { id: "english", label: "複習英文單字", indexes: [8] },
       { id: "self-leadership", label: "練習自律與自我管理", indexes: [3, 4, 5] },
