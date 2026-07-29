@@ -33,6 +33,17 @@ function base(payload, action) {
   return null;
 }
 
+function groupSettings(payload) {
+  const groupCount = Number(payload.groupCount ?? 4);
+  if (!Number.isInteger(groupCount) || groupCount < 2 || groupCount > 12) {
+    return null;
+  }
+  return {
+    groupCount,
+    lockTeamAnswers: Boolean(payload.lockTeamAnswers),
+  };
+}
+
 export function validateClassroomPayload(payload) {
   if (!payload || typeof payload !== "object") {
     return { ok: false, error: "invalid_payload" };
@@ -49,9 +60,17 @@ export function validateClassroomPayload(payload) {
     if (!MODES.has(payload.mode)) {
       return { ok: false, error: "invalid_mode" };
     }
+    const groups = groupSettings(payload);
+    if (!groups) return { ok: false, error: "invalid_group_settings" };
     return {
       ok: true,
-      value: { action, siteId, teacherToken: payload.teacherToken, mode: payload.mode },
+      value: {
+        action,
+        siteId,
+        teacherToken: payload.teacherToken,
+        mode: payload.mode,
+        ...groups,
+      },
     };
   }
 
@@ -124,6 +143,8 @@ export function validateClassroomPayload(payload) {
     if (!MODES.has(payload.mode) || !STATUSES.has(payload.status)) {
       return { ok: false, error: "invalid_classroom_state" };
     }
+    const groups = groupSettings(payload);
+    if (!groups) return { ok: false, error: "invalid_group_settings" };
     const question = safeText(payload.question, 300);
     const options = Array.isArray(payload.options)
       ? payload.options.map((item) => safeText(item, 100)).filter(Boolean)
@@ -162,6 +183,7 @@ export function validateClassroomPayload(payload) {
         durationSeconds,
         revealAnswer: Boolean(payload.revealAnswer),
         newQuestion: Boolean(payload.newQuestion),
+        ...groups,
       },
     };
   }

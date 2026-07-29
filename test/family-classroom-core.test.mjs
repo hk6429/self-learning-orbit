@@ -5,10 +5,13 @@ import {
   addEncouragement,
   createChildProfile,
   createFamilyState,
+  deleteChildProfile,
   generateClassCode,
   isValidClassCode,
   normalizeNickname,
   publicClassroomView,
+  renameChildProfile,
+  restoreChildProfile,
   switchFamilyProfile,
 } from "../family-classroom-core.js";
 
@@ -70,6 +73,34 @@ test("家庭鼓勵只接受正向固定類型並歸入指定孩子", () => {
   assert.throws(() => addEncouragement(next, "child-b", "責備", Date.now()));
 });
 
+test("孩子檔案可重新命名、移到可復原區並連同進度還原", () => {
+  let state = createChildProfile(
+    createFamilyState(),
+    "小明",
+    () => "child-restore",
+  );
+  state = {
+    ...state,
+    snapshots: {
+      ...state.snapshots,
+      "child-restore": { entries: { wx_stats: "{\"level\":5}" } },
+    },
+  };
+  state = renameChildProfile(state, "child-restore", "  小 明同學 ");
+  assert.equal(state.profiles[0].name, "小 明同學");
+
+  state = deleteChildProfile(state, "child-restore", 1_785_291_200_000);
+  assert.equal(state.profiles.length, 0);
+  assert.equal(state.active.profileId, "parent-experience");
+  assert.equal(state.deletedProfiles[0].id, "child-restore");
+  assert.equal(state.deletedProfiles[0].snapshot.entries.wx_stats, "{\"level\":5}");
+
+  state = restoreChildProfile(state, "child-restore");
+  assert.equal(state.deletedProfiles.length, 0);
+  assert.equal(state.profiles[0].name, "小 明同學");
+  assert.equal(state.snapshots["child-restore"].entries.wx_stats, "{\"level\":5}");
+});
+
 test("六位數班級碼使用安全隨機值且格式固定", () => {
   const fakeCrypto = {
     getRandomValues(bytes) {
@@ -117,4 +148,37 @@ test("公開課堂成果只含參與率與分布，不暴露姓名或個別答�
   assert.equal(view.correctOption, undefined);
   assert.equal(JSON.stringify(view).includes("小明"), false);
   assert.equal(JSON.stringify(view).includes("participantId"), false);
+});
+
+test("分組成果提供每組作答數、正確數與合作能量", () => {
+  const view = publicClassroomView(
+    {
+      code: "123456",
+      siteId: "wenhao-xiaozhuan",
+      mode: "group",
+      status: "paused",
+      question: "題目",
+      options: ["甲", "乙"],
+      questionVersion: 1,
+      revealAnswer: true,
+      correctOption: "B",
+      groupCount: 2,
+      lockTeamAnswers: true,
+    },
+    [
+      { participantId: "p1", nickname: "甲", team: "第 1 組" },
+      { participantId: "p2", nickname: "乙", team: "第 1 組" },
+    ],
+    [
+      { participantId: "p1", answer: "B" },
+      { participantId: "p2", answer: "A" },
+    ],
+  );
+  assert.deepEqual(view.teamResults["第 1 組"], {
+    answered: 2,
+    correct: 1,
+    energy: 12,
+  });
+  assert.equal(view.groupCount, 2);
+  assert.equal(view.lockTeamAnswers, true);
 });

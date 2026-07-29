@@ -2,23 +2,48 @@ import {
   addEncouragement,
   createChildProfile,
   createFamilyState,
+  deleteChildProfile,
   normalizeNickname,
+  renameChildProfile,
+  restoreChildProfile,
   sanitizeFamilyState,
   switchFamilyProfile,
   updateActiveSnapshot,
-} from "./family-classroom-core.js?v=1";
+} from "./family-classroom-core.js?v=3";
 import {
   SITE_CONFIGS,
+  decryptSnapshot,
+  encryptSnapshot,
+  isValidPassportCode,
+  normalizePassportCode,
+  passportSyncId,
   selectProgressEntries,
-} from "./learning-passport-core.js?v=1";
+} from "./learning-passport-core.js?v=3";
+import {
+  chooseNativeQuestion,
+  createClassroomReport,
+  reportsToCsv,
+  sanitizeClassroomReports,
+  sanitizeQuestionBank,
+} from "./teacher-tools-core.js?v=3";
 
 const params = new URL(import.meta.url).searchParams;
 const siteConfig = SITE_CONFIGS[params.get("site")];
 const classroomEndpoint =
   "https://self-learning-orbit.pages.dev/api/classroom";
+const cheersEndpoint =
+  "https://self-learning-orbit.pages.dev/api/family-cheers";
 const familyKey = siteConfig ? `danai-family-state:${siteConfig.id}` : "";
 const teacherKey = siteConfig ? `danai-classroom-teacher:${siteConfig.id}` : "";
 const studentKey = siteConfig ? `danai-classroom-student:${siteConfig.id}` : "";
+const questionBankKey = siteConfig ? `danai-classroom-bank:${siteConfig.id}` : "";
+const reportKey = siteConfig ? `danai-classroom-reports:${siteConfig.id}` : "";
+const cheerSeenKey = siteConfig ? `danai-family-cheers-seen:${siteConfig.id}` : "";
+const cheerPollKey = siteConfig ? `danai-family-cheers-poll:${siteConfig.id}` : "";
+const passportCodeKey = "danai-learning-passport-code";
+const passportSyncKey = siteConfig
+  ? `danai-learning-passport-sync:${siteConfig.id}`
+  : "";
 
 if (siteConfig && !document.getElementById("danai-family-classroom")) {
   mountHub();
@@ -153,6 +178,11 @@ function mountHub() {
       .projection-close { position:absolute; top:20px; right:20px; }
       details { margin-top:10px; }
       summary { cursor:pointer; color:#bff5ff; font-size:11px; }
+      .compact-list { display:grid; gap:7px; margin-top:9px; }
+      .compact-item { display:flex; flex-wrap:wrap; align-items:center;
+        justify-content:space-between; gap:8px; padding:9px;
+        border-radius:10px; background:#11182c; }
+      .compact-item span { min-width:0; overflow-wrap:anywhere; font-size:11px; }
       table { width:100%; margin-top:8px; border-collapse:collapse; font-size:11px; }
       th,td { padding:7px; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; }
       @media (max-width:620px) {
@@ -160,6 +190,12 @@ function mountHub() {
         main,.tabs,header { padding-left:14px; padding-right:14px; }
         .choice-grid,.mode-grid,.fields,.profile-list { grid-template-columns:1fr; }
         .results { grid-template-columns:1fr 1fr; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          scroll-behavior:auto !important; transition:none !important;
+          animation:none !important;
+        }
       }
     </style>
     <button class="launcher" type="button" aria-haspopup="dialog">
@@ -192,6 +228,9 @@ function mountHub() {
                 <input data-child-name maxlength="12" placeholder="輸入孩子暱稱" aria-label="孩子暱稱">
                 <button class="action" type="button" data-add-child>新增孩子</button>
               </div>
+              <details><summary>最近刪除，可復原</summary>
+                <div class="compact-list" data-deleted-profile-list></div>
+              </details>
               <p class="message" data-family-message role="status" aria-live="polite"></p>
             </article>
             <article class="card">
@@ -203,10 +242,16 @@ function mountHub() {
                 <button class="action secondary" type="button" data-encourage="補充能量">補充能量</button>
               </div>
               <p class="hint" data-encouragement-summary></p>
+              <p class="hint">若已設定學習護照，鼓勵會加密傳到孩子的其他裝置，伺服器看不到姓名與內容。</p>
             </article>
             <article class="card">
               <h3>孩子換裝置接手</h3>
               <p class="hint">在「學習紀錄」同步同一組護照碼，家庭檔案與每位孩子進度會一起加密帶走；不必固定使用家長手機。</p>
+            </article>
+            <article class="card">
+              <h3>本機資料管理</h3>
+              <p class="hint">可一次清除這台裝置上的家庭檔案、護照連結、教師題庫與課堂紀錄；遊戲本身的學習進度會保留。</p>
+              <button class="action danger" type="button" data-clear-hub>清除家庭／護照／課堂資料</button>
             </article>
           </section>
           <section data-panel="classroom" class="stack" hidden>
@@ -219,13 +264,33 @@ function mountHub() {
             </article>
             <article class="card" data-view="teacher" hidden>
               <h3>教師控制台</h3>
-              <label>課堂模式<select data-class-mode>
-                <option value="individual">個人作答</option>
-                <option value="group">分組搶答</option>
-                <option value="discussion">全班討論</option>
-              </select></label>
+              <div class="fields">
+                <label>課堂模式<select data-class-mode>
+                  <option value="individual">個人作答</option>
+                  <option value="group">分組搶答</option>
+                  <option value="discussion">全班討論</option>
+                </select></label>
+                <label>自動分組數<select data-group-count>
+                  <option>2</option><option>3</option><option selected>4</option>
+                  <option>5</option><option>6</option><option>8</option>
+                  <option>10</option><option>12</option>
+                </select></label>
+                <label><span>分組作答規則</span><select data-team-lock>
+                  <option value="false">每人都能作答</option>
+                  <option value="true">每組第一份答案鎖定</option>
+                </select></label>
+              </div>
               <button class="action" type="button" data-create-room>產生六位數班級碼</button>
               <div class="teacher-code"><strong data-class-code>------</strong></div>
+              <div class="controls">
+                <button class="action secondary" type="button" data-import-native>匯入目前平台題目</button>
+                <button class="action secondary" type="button" data-save-template>儲存到教師題庫</button>
+              </div>
+              <div class="row">
+                <select data-question-bank aria-label="教師題庫"><option value="">選擇已存題目</option></select>
+                <div class="controls"><button class="action secondary" type="button" data-load-template>載入</button>
+                <button class="action danger" type="button" data-delete-template>刪除</button></div>
+              </div>
               <div class="fields">
                 <label>題目<textarea data-question maxlength="300" placeholder="輸入要投影的題目"></textarea></label>
                 <label>答案解析<textarea data-explanation maxlength="500" placeholder="揭曉後顯示的解析"></textarea></label>
@@ -253,13 +318,20 @@ function mountHub() {
               <div class="results" data-teacher-results></div>
               <details><summary>教師私密明細（投影畫面不顯示）</summary>
                 <div data-private-results></div></details>
+              <details><summary>課堂歷史與 CSV 報告</summary>
+                <div class="controls">
+                  <button class="action secondary" type="button" data-save-report>保存目前報告</button>
+                  <button class="action secondary" type="button" data-export-csv>下載 CSV</button>
+                </div>
+                <div class="compact-list" data-report-list></div>
+              </details>
             </article>
             <article class="card" data-view="student" hidden>
               <h3>加入課堂</h3>
               <div class="fields">
                 <label>六位數班級碼<input data-join-code inputmode="numeric" maxlength="6"></label>
                 <label>暱稱<input data-nickname maxlength="16"></label>
-                <label>組別（分組模式才需要）<input data-team maxlength="12" placeholder="例如：第一組"></label>
+                <label>組別（可留白自動分組）<input data-team maxlength="12" placeholder="留白由系統安排"></label>
               </div>
               <button class="action" type="button" data-join-room>30 秒內加入</button>
               <p class="message" data-student-message role="status" aria-live="polite"></p>
@@ -288,8 +360,16 @@ function mountHub() {
   let studentSession = loadJson(studentKey, null);
   let teacherRoom = null;
   let studentRoom = null;
+  let questionBank = sanitizeQuestionBank(loadJson(questionBankKey, []));
+  let classroomReports = sanitizeClassroomReports(loadJson(reportKey, []));
+  let seenCheerIds = new Set(
+    Array.isArray(loadJson(cheerSeenKey, []))
+      ? loadJson(cheerSeenKey, []).slice(-200)
+      : [],
+  );
   let teacherPollTimer = 0;
   let studentPollTimer = 0;
+  let cheerPollTimer = 0;
   let clockTimer = 0;
 
   function loadJson(key, fallback) {
@@ -303,6 +383,14 @@ function mountHub() {
 
   function storeJson(key, value) {
     localStorage.setItem(key, JSON.stringify(value));
+  }
+
+  function currentPassportCode() {
+    try {
+      return normalizePassportCode(localStorage.getItem(passportCodeKey));
+    } catch {
+      return "";
+    }
   }
 
   function safeCurrentEntries() {
@@ -351,11 +439,22 @@ function mountHub() {
       ${familyState.profiles
         .map(
           (profile) => `<div class="profile" aria-current="${activeId === profile.id}">
-            <span>${escapeHtml(profile.name)}</span>
+            <span>${escapeHtml(profile.name)}</span><div class="controls">
             <button class="action secondary" type="button" data-switch-profile="${profile.id}">陪他學</button>
+            <button class="action secondary" type="button" data-rename-profile="${profile.id}">改名</button>
+            <button class="action danger" type="button" data-delete-profile="${profile.id}">刪除</button></div>
           </div>`,
         )
         .join("")}`;
+    shadow.querySelector("[data-deleted-profile-list]").innerHTML =
+      familyState.deletedProfiles.length
+        ? familyState.deletedProfiles
+            .map(
+              (profile) => `<div class="compact-item"><span>${escapeHtml(profile.name)}</span>
+                <button class="action secondary" type="button" data-restore-profile="${profile.id}">復原</button></div>`,
+            )
+            .join("")
+        : `<p class="hint">目前沒有可復原的孩子檔案。</p>`;
     const activeChild = familyState.profiles.find((item) => item.id === activeId);
     const counts = activeChild?.encouragements.reduce((output, item) => {
       output[item.type] = (output[item.type] || 0) + 1;
@@ -385,6 +484,14 @@ function mountHub() {
   }
 
   function switchProfile(targetId) {
+    if (
+      targetId !== familyState.active.profileId &&
+      !window.confirm(
+        `要把紀錄歸屬從「${profileName(familyState.active.profileId)}」切換為「${profileName(targetId)}」嗎？目前進度會先保存。`,
+      )
+    ) {
+      return;
+    }
     const result = switchFamilyProfile(
       familyState,
       targetId === "parent-experience"
@@ -425,6 +532,17 @@ function mountHub() {
     return data;
   }
 
+  async function cheersPost(payload) {
+    const response = await fetch(cheersEndpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.ok) throw new Error(data.error || "cheers_failed");
+    return data;
+  }
+
   function randomId(prefix) {
     return `${prefix}_${crypto.randomUUID().replaceAll("-", "")}`;
   }
@@ -439,6 +557,9 @@ function mountHub() {
       code: teacherSession.code,
       teacherToken: teacherSession.teacherToken,
       mode: shadow.querySelector("[data-class-mode]").value,
+      groupCount: Number(shadow.querySelector("[data-group-count]").value),
+      lockTeamAnswers:
+        shadow.querySelector("[data-team-lock]").value === "true",
       status: teacherRoom?.status || "draft",
       question: shadow.querySelector("[data-question]").value.trim(),
       options,
@@ -449,6 +570,224 @@ function mountHub() {
       newQuestion: false,
       ...overrides,
     };
+  }
+
+  function fillQuestionForm(question) {
+    shadow.querySelector("[data-question]").value = question.question;
+    shadow.querySelector("[data-explanation]").value =
+      question.explanation || "";
+    for (const [index, key] of [..."ABCD"].entries()) {
+      shadow.querySelector(`[data-option="${key}"]`).value =
+        question.options[index] || "";
+    }
+    shadow.querySelector("[data-correct]").value =
+      question.correctOption || "A";
+  }
+
+  function isVisibleElement(element) {
+    if (!element || host.contains(element)) return false;
+    const style = window.getComputedStyle(element);
+    const rect = element.getBoundingClientRect();
+    return (
+      style.display !== "none" &&
+      style.visibility !== "hidden" &&
+      Number(style.opacity) !== 0 &&
+      rect.width > 0 &&
+      rect.height > 0
+    );
+  }
+
+  function nativeQuestionCandidates() {
+    const questionSelectors = [
+      "[data-question]",
+      "[class*='question-text']",
+      "[class*='questionText']",
+      "[id*='question-text']",
+      "[id*='questionText']",
+      ".quiz-question",
+      ".question",
+      "#question",
+      ".prompt",
+    ];
+    const optionSelectors = [
+      "[data-option]",
+      "[data-answer]",
+      "[class*='option']",
+      "[class*='choice']",
+      ".answer",
+      "label",
+      "button",
+      "li",
+    ];
+    const output = [];
+    const seen = new Set();
+    for (const element of document.querySelectorAll(questionSelectors.join(","))) {
+      if (!isVisibleElement(element)) continue;
+      const question = element.textContent?.trim() || "";
+      if (question.length < 4 || question.length > 300 || seen.has(question)) continue;
+      seen.add(question);
+      let root = element.parentElement;
+      let options = [];
+      for (let depth = 0; root && depth < 4; depth += 1, root = root.parentElement) {
+        options = [...root.querySelectorAll(optionSelectors.join(","))]
+          .filter(isVisibleElement)
+          .map((item) => item.textContent?.trim() || "")
+          .filter(
+            (text) =>
+              text &&
+              text !== question &&
+              text.length <= 100 &&
+              !/^(下一題|上一題|送出|確認|繼續|提示|返回|關閉)$/.test(text),
+          )
+          .filter((text, index, all) => all.indexOf(text) === index)
+          .slice(0, 4);
+        if (options.length >= 2) break;
+      }
+      const explanation = [...document.querySelectorAll(
+        "[class*='explanation'],[class*='analysis'],[id*='explanation'],[id*='analysis']",
+      )].find(isVisibleElement)?.textContent?.trim();
+      const correctNode = root?.querySelector?.(
+        "[data-correct='true'],.correct,[aria-checked='true']",
+      );
+      const correctText = correctNode?.textContent?.trim() || "";
+      const correctIndex = options.findIndex(
+        (option) => correctText.includes(option) || option.includes(correctText),
+      );
+      output.push({
+        question,
+        options,
+        explanation,
+        correctOption: correctIndex >= 0 ? "ABCD"[correctIndex] : "A",
+        visible: true,
+        score: question.length + options.length * 25,
+      });
+    }
+    return output;
+  }
+
+  function renderQuestionBank() {
+    const select = shadow.querySelector("[data-question-bank]");
+    const selected = select.value;
+    select.innerHTML = `<option value="">選擇已存題目</option>${questionBank
+      .map(
+        (item) =>
+          `<option value="${item.id}">${escapeHtml(item.title)}</option>`,
+      )
+      .join("")}`;
+    if (questionBank.some((item) => item.id === selected)) {
+      select.value = selected;
+    }
+  }
+
+  function saveQuestionBank() {
+    questionBank = sanitizeQuestionBank(questionBank);
+    storeJson(questionBankKey, questionBank);
+    renderQuestionBank();
+  }
+
+  function renderReports() {
+    shadow.querySelector("[data-report-list]").innerHTML =
+      classroomReports.length
+        ? classroomReports
+            .slice()
+            .reverse()
+            .slice(0, 10)
+            .map(
+              (report) =>
+                `<div class="compact-item"><span>${new Date(report.endedAt).toLocaleString("zh-TW")}｜
+                ${escapeHtml(report.question || "未命名題目")}｜參與 ${report.participationRate}%｜
+                正確 ${report.accuracyRate}%</span></div>`,
+            )
+            .join("")
+        : `<p class="hint">尚未保存課堂報告。</p>`;
+  }
+
+  function saveCurrentReport() {
+    if (!teacherRoom?.question) {
+      teacherMessage("目前沒有可保存的課堂題目。", true);
+      return false;
+    }
+    classroomReports = [
+      ...classroomReports,
+      createClassroomReport(
+        { ...teacherRoom, code: teacherSession?.code || "" },
+        Date.now(),
+      ),
+    ].slice(-50);
+    storeJson(reportKey, classroomReports);
+    renderReports();
+    return true;
+  }
+
+  async function pushCheer(profileId, type, eventId, createdAt) {
+    const code = currentPassportCode();
+    if (!isValidPassportCode(code)) return false;
+    const encrypted = await encryptSnapshot(
+      {
+        schemaVersion: 1,
+        siteId: siteConfig.id,
+        profileId,
+        type,
+        createdAt,
+      },
+      code,
+    );
+    await cheersPost({
+      action: "push",
+      siteId: siteConfig.id,
+      syncId: await passportSyncId(code),
+      eventId,
+      ...encrypted,
+    });
+    return true;
+  }
+
+  async function pollCheers() {
+    const code = currentPassportCode();
+    if (!isValidPassportCode(code)) return;
+    try {
+      const since = Math.max(
+        0,
+        (Number(localStorage.getItem(cheerPollKey)) || 0) - 2000,
+      );
+      const data = await cheersPost({
+        action: "poll",
+        siteId: siteConfig.id,
+        syncId: await passportSyncId(code),
+        since,
+      });
+      let nextState = familyState;
+      let received = 0;
+      for (const event of data.events || []) {
+        if (seenCheerIds.has(event.eventId)) continue;
+        const cheer = await decryptSnapshot(event, code);
+        if (
+          cheer?.schemaVersion !== 1 ||
+          cheer.siteId !== siteConfig.id ||
+          !nextState.profiles.some((profile) => profile.id === cheer.profileId)
+        ) {
+          continue;
+        }
+        try {
+          nextState = addEncouragement(
+            nextState,
+            cheer.profileId,
+            cheer.type,
+            Number(cheer.createdAt) || event.createdAt,
+          );
+          seenCheerIds.add(event.eventId);
+          received += 1;
+        } catch {}
+      }
+      localStorage.setItem(cheerPollKey, String(data.polledAt || Date.now()));
+      storeJson(cheerSeenKey, [...seenCheerIds].slice(-200));
+      if (received) {
+        saveFamily(nextState);
+        familyMessage(`收到 ${received} 份來自另一台裝置的家庭鼓勵。`);
+      }
+    } catch {
+      // 即時鼓勵失敗不影響本機學習與既有家庭資料。
+    }
   }
 
   function teacherMessage(text, error = false) {
@@ -476,6 +815,16 @@ function mountHub() {
     teacherRoom = room;
     shadow.querySelector("[data-class-code]").textContent =
       teacherSession?.code || "------";
+    if (room?.question && !shadow.querySelector("[data-question]").value) {
+      fillQuestionForm(room);
+    }
+    if (room?.mode) shadow.querySelector("[data-class-mode]").value = room.mode;
+    if (room?.groupCount) {
+      shadow.querySelector("[data-group-count]").value = String(room.groupCount);
+    }
+    shadow.querySelector("[data-team-lock]").value = String(
+      Boolean(room?.lockTeamAnswers),
+    );
     renderResults(shadow.querySelector("[data-teacher-results]"), room);
     const privateRows = room?.privateParticipants || [];
     shadow.querySelector("[data-private-results]").innerHTML = privateRows.length
@@ -507,6 +856,12 @@ function mountHub() {
         : room?.status === "paused"
           ? "作答已暫停"
           : "個別姓名與錯誤不會出現在投影畫面。";
+    if (room?.mode === "group" && Object.keys(room.teamResults || {}).length) {
+      shadow.querySelector("[data-project-explanation]").textContent +=
+        `｜合作能量：${Object.entries(room.teamResults)
+          .map(([team, result]) => `${team} ${result.energy}`)
+          .join("、")}`;
+    }
   }
 
   function renderStudent(room) {
@@ -568,6 +923,9 @@ function mountHub() {
     dialog.showModal();
   });
   shadow.querySelector(".close").addEventListener("click", () => dialog.close());
+  dialog.addEventListener("close", () => {
+    shadow.querySelector(".launcher").focus();
+  });
   dialog.addEventListener("click", (event) => {
     if (event.target === dialog) dialog.close();
   });
@@ -593,9 +951,59 @@ function mountHub() {
     switchProfile(familyState.profiles[0].id);
   });
   shadow.querySelector("[data-profile-list]").addEventListener("click", (event) => {
-    const button = event.target.closest("[data-switch-profile]");
-    if (button) switchProfile(button.dataset.switchProfile);
+    const switchButton = event.target.closest("[data-switch-profile]");
+    if (switchButton) {
+      switchProfile(switchButton.dataset.switchProfile);
+      return;
+    }
+    const renameButton = event.target.closest("[data-rename-profile]");
+    if (renameButton) {
+      const profileId = renameButton.dataset.renameProfile;
+      const name = window.prompt("輸入新的孩子暱稱", profileName(profileId));
+      if (name === null) return;
+      try {
+        saveFamily(renameChildProfile(familyState, profileId, name));
+        familyMessage("孩子暱稱已更新，原有進度不受影響。");
+      } catch {
+        familyMessage("請輸入 1–12 個字的孩子暱稱。", true);
+      }
+      return;
+    }
+    const deleteButton = event.target.closest("[data-delete-profile]");
+    if (deleteButton) {
+      const profileId = deleteButton.dataset.deleteProfile;
+      if (
+        !window.confirm(
+          `確定刪除「${profileName(profileId)}」嗎？檔案會先放進可復原區。`,
+        )
+      ) {
+        return;
+      }
+      let state = updateActiveSnapshot(familyState, safeCurrentEntries());
+      state = deleteChildProfile(state, profileId);
+      const deletedActive = familyState.active.profileId === profileId;
+      saveFamily(state);
+      if (deletedActive) {
+        replaceProgress(state.snapshots["parent-experience"]?.entries || {});
+      }
+      familyMessage("孩子檔案已移到可復原區。");
+      if (deletedActive) window.setTimeout(() => window.location.reload(), 500);
+    }
   });
+  shadow
+    .querySelector("[data-deleted-profile-list]")
+    .addEventListener("click", (event) => {
+      const button = event.target.closest("[data-restore-profile]");
+      if (!button) return;
+      try {
+        saveFamily(
+          restoreChildProfile(familyState, button.dataset.restoreProfile),
+        );
+        familyMessage("孩子檔案與原有進度都已復原。");
+      } catch {
+        familyMessage("目前無法復原；請確認孩子檔案未達 8 位上限。", true);
+      }
+    });
   shadow.querySelector("[data-add-child]").addEventListener("click", () => {
     const input = shadow.querySelector("[data-child-name]");
     try {
@@ -611,21 +1019,61 @@ function mountHub() {
     }
   });
   for (const button of shadow.querySelectorAll("[data-encourage]")) {
-    button.addEventListener("click", () => {
+    button.addEventListener("click", async () => {
       try {
+        const profileId = familyState.active.profileId;
+        const createdAt = Date.now();
+        const eventId = `cheer_${crypto.randomUUID().replaceAll("-", "")}`;
         saveFamily(
           addEncouragement(
             familyState,
-            familyState.active.profileId,
+            profileId,
             button.dataset.encourage,
+            createdAt,
           ),
         );
-        familyMessage(`已送出「${button.dataset.encourage}」，今天繼續當孩子的啦啦隊。`);
+        seenCheerIds.add(eventId);
+        storeJson(cheerSeenKey, [...seenCheerIds].slice(-200));
+        const synced = await pushCheer(
+          profileId,
+          button.dataset.encourage,
+          eventId,
+          createdAt,
+        ).catch(() => false);
+        familyMessage(
+          synced
+            ? `已送出「${button.dataset.encourage}」，孩子其他裝置也會收到。`
+            : `已在本機送出「${button.dataset.encourage}」。設定學習護照後可跨裝置傳送。`,
+        );
       } catch {
         familyMessage("請先選擇一位孩子。", true);
       }
     });
   }
+  shadow.querySelector("[data-clear-hub]").addEventListener("click", () => {
+    if (
+      !window.confirm(
+        "要清除這台裝置上的家庭檔案、護照連結、教師題庫與課堂紀錄嗎？遊戲進度會保留。",
+      ) ||
+      !window.confirm("這個動作無法復原。確定繼續嗎？")
+    ) {
+      return;
+    }
+    for (const key of [
+      familyKey,
+      teacherKey,
+      studentKey,
+      questionBankKey,
+      reportKey,
+      cheerSeenKey,
+      cheerPollKey,
+      passportCodeKey,
+      passportSyncKey,
+    ]) {
+      localStorage.removeItem(key);
+    }
+    window.location.reload();
+  });
 
   shadow.querySelector("[data-teacher-start]").addEventListener("click", () => {
     showClassView("teacher");
@@ -649,6 +1097,9 @@ function mountHub() {
       const data = await classroomPost({
         action: "create", siteId: siteConfig.id, teacherToken,
         mode: shadow.querySelector("[data-class-mode]").value,
+        groupCount: Number(shadow.querySelector("[data-group-count]").value),
+        lockTeamAnswers:
+          shadow.querySelector("[data-team-lock]").value === "true",
       });
       teacherSession = { code: data.code, teacherToken };
       storeJson(teacherKey, teacherSession);
@@ -658,6 +1109,68 @@ function mountHub() {
     } catch {
       teacherMessage("暫時無法建立課堂，請檢查網路後再試。", true);
     }
+  });
+  shadow.querySelector("[data-import-native]").addEventListener("click", () => {
+    const question = chooseNativeQuestion(nativeQuestionCandidates());
+    if (!question) {
+      teacherMessage(
+        "目前畫面找不到可辨識的題目與選項；請先在平台開啟一道題，或手動輸入。",
+        true,
+      );
+      return;
+    }
+    fillQuestionForm(question);
+    teacherMessage("已匯入目前平台題目，請確認答案與解析後再開始。");
+  });
+  shadow.querySelector("[data-save-template]").addEventListener("click", () => {
+    const question = chooseNativeQuestion([
+      {
+        question: shadow.querySelector("[data-question]").value,
+        options: [..."ABCD"].map(
+          (key) => shadow.querySelector(`[data-option="${key}"]`).value,
+        ),
+        explanation: shadow.querySelector("[data-explanation]").value,
+        correctOption: shadow.querySelector("[data-correct]").value,
+      },
+    ]);
+    if (!question) {
+      teacherMessage("請先填寫題目與至少兩個選項。", true);
+      return;
+    }
+    const title = window.prompt(
+      "為這份課堂題目命名",
+      question.question.slice(0, 24),
+    );
+    if (title === null) return;
+    questionBank = [
+      ...questionBank,
+      {
+        id: randomId("question"),
+        title,
+        ...question,
+        createdAt: Date.now(),
+      },
+    ];
+    saveQuestionBank();
+    teacherMessage("題目已保存到這台裝置的教師題庫。");
+  });
+  shadow.querySelector("[data-load-template]").addEventListener("click", () => {
+    const id = shadow.querySelector("[data-question-bank]").value;
+    const question = questionBank.find((item) => item.id === id);
+    if (!question) {
+      teacherMessage("請先選擇一份題庫題目。", true);
+      return;
+    }
+    fillQuestionForm(question);
+    teacherMessage("題庫題目已載入，可再編輯後出題。");
+  });
+  shadow.querySelector("[data-delete-template]").addEventListener("click", () => {
+    const id = shadow.querySelector("[data-question-bank]").value;
+    const question = questionBank.find((item) => item.id === id);
+    if (!question || !window.confirm(`確定刪除「${question.title}」嗎？`)) return;
+    questionBank = questionBank.filter((item) => item.id !== id);
+    saveQuestionBank();
+    teacherMessage("題庫題目已刪除。");
   });
   shadow.querySelector("[data-open-question]").addEventListener("click", async () => {
     if (!teacherSession?.code) return teacherMessage("請先產生班級碼。", true);
@@ -703,8 +1216,28 @@ function mountHub() {
     try {
       const data = await classroomPost(teacherPayload({ status: "closed" }));
       renderTeacher(data.room);
-      teacherMessage("課堂已結束。");
+      const saved = saveCurrentReport();
+      teacherMessage(saved ? "課堂已結束，報告已保存。" : "課堂已結束。");
     } catch { teacherMessage("結束課堂失敗，請再試一次。", true); }
+  });
+  shadow.querySelector("[data-save-report]").addEventListener("click", () => {
+    if (saveCurrentReport()) teacherMessage("目前課堂報告已保存。");
+  });
+  shadow.querySelector("[data-export-csv]").addEventListener("click", () => {
+    if (!classroomReports.length) {
+      teacherMessage("尚無課堂報告可下載。", true);
+      return;
+    }
+    const blob = new Blob([reportsToCsv(classroomReports)], {
+      type: "text/csv;charset=utf-8",
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${siteConfig.id}-classroom-reports.csv`;
+    link.click();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    teacherMessage("CSV 報告已下載；姓名欄位留在教師裝置，不會出現在投影。");
   });
   shadow.querySelector("[data-project]").addEventListener("click", async () => {
     const projection = shadow.querySelector("[data-projection]");
@@ -744,14 +1277,23 @@ function mountHub() {
       });
       studentMessage(`已送出答案 ${button.dataset.submitAnswer}，仍可在截止前修改。`);
       await pollStudent();
-    } catch {
-      studentMessage("目前無法作答，可能已暫停或結束。", true);
+    } catch (error) {
+      studentMessage(
+        error.message === "team_answer_locked"
+          ? "這一組已鎖定答案，請一起等老師揭曉。"
+          : "目前無法作答，可能已暫停或結束。",
+        true,
+      );
     }
   });
 
   renderFamily();
+  renderQuestionBank();
+  renderReports();
+  pollCheers();
   teacherPollTimer = window.setInterval(pollTeacher, 2500);
   studentPollTimer = window.setInterval(pollStudent, 2500);
+  cheerPollTimer = window.setInterval(pollCheers, 5000);
   clockTimer = window.setInterval(() => {
     const timer = shadow.querySelector("[data-project-timer]");
     if (!teacherRoom?.endsAt || teacherRoom.status !== "open") {
@@ -770,6 +1312,7 @@ function mountHub() {
   window.addEventListener("pagehide", () => {
     window.clearInterval(teacherPollTimer);
     window.clearInterval(studentPollTimer);
+    window.clearInterval(cheerPollTimer);
     window.clearInterval(clockTimer);
     saveFamily(updateActiveSnapshot(familyState, safeCurrentEntries()));
   });

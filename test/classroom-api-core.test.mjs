@@ -18,15 +18,17 @@ test("教師權杖與學生匿名識別碼格式受限", () => {
 });
 
 test("建立課堂需正式平台、教師權杖與合法模式", () => {
-  assert.equal(
-    validateClassroomPayload({
-      action: "create",
-      siteId: "wenhao-xiaozhuan",
-      teacherToken,
-      mode: "group",
-    }).ok,
-    true,
-  );
+  const valid = validateClassroomPayload({
+    action: "create",
+    siteId: "wenhao-xiaozhuan",
+    teacherToken,
+    mode: "group",
+    groupCount: 6,
+    lockTeamAnswers: true,
+  });
+  assert.equal(valid.ok, true);
+  assert.equal(valid.value.groupCount, 6);
+  assert.equal(valid.value.lockTeamAnswers, true);
   assert.equal(
     validateClassroomPayload({
       action: "create",
@@ -90,8 +92,11 @@ test("教師更新題目限制文字長度、選項數量與計時範圍", () =>
     explanation: "因為……",
     durationSeconds: 60,
     revealAnswer: false,
+    groupCount: 4,
+    lockTeamAnswers: true,
   });
   assert.equal(valid.ok, true);
+  assert.equal(valid.value.groupCount, 4);
   assert.equal(
     validateClassroomPayload({
       ...valid.value,

@@ -90,6 +90,8 @@ CREATE TABLE IF NOT EXISTS classroom_rooms (
   site_id TEXT NOT NULL,
   teacher_token_hash TEXT NOT NULL,
   mode TEXT NOT NULL,
+  group_count INTEGER NOT NULL DEFAULT 4,
+  lock_team_answers INTEGER NOT NULL DEFAULT 0,
   status TEXT NOT NULL,
   question TEXT NOT NULL DEFAULT '',
   options_json TEXT NOT NULL DEFAULT '[]',
@@ -132,3 +134,20 @@ CREATE TABLE IF NOT EXISTS classroom_answers (
 
 CREATE INDEX IF NOT EXISTS idx_classroom_answers_code_version
 ON classroom_answers (code, question_version);
+
+CREATE TABLE IF NOT EXISTS family_cheers (
+  site_id TEXT NOT NULL,
+  sync_id TEXT NOT NULL,
+  event_id TEXT NOT NULL,
+  cipher_text TEXT NOT NULL,
+  iv TEXT NOT NULL,
+  created_at INTEGER NOT NULL,
+  expires_at INTEGER NOT NULL,
+  PRIMARY KEY (site_id, sync_id, event_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_family_cheers_poll
+ON family_cheers (site_id, sync_id, created_at);
+
+CREATE INDEX IF NOT EXISTS idx_family_cheers_expires_at
+ON family_cheers (expires_at);

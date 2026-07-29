@@ -56,3 +56,28 @@ test("P2 投影畫面只呈現安全統計，個別明細留在教師區", () =>
   assert.match(script, /個別姓名與錯誤不會出現在投影畫面/);
   assert.match(script, /\[data-projection\]\[hidden\][\s\S]*display:\s*none/);
 });
+
+test("P3 提供題目匯入、教師題庫、課堂報告與深化分組", () => {
+  assert.match(script, /匯入目前平台題目/);
+  assert.match(script, /儲存到教師題庫/);
+  assert.match(script, /課堂歷史與 CSV 報告/);
+  assert.match(script, /自動分組數/);
+  assert.match(script, /每組第一份答案鎖定/);
+  assert.match(script, /合作能量/);
+});
+
+test("P3 家庭檔案可改名刪除復原、跨裝置鼓勵並清除本機資料", () => {
+  assert.match(script, /data-rename-profile/);
+  assert.match(script, /data-delete-profile/);
+  assert.match(script, /data-restore-profile/);
+  assert.match(script, /family-cheers/);
+  assert.match(script, /清除家庭／護照／課堂資料/);
+  assert.match(script, /這個動作無法復原/);
+});
+
+test("P3 對鍵盤、焦點與減少動態偏好保留可用性", () => {
+  assert.match(script, /prefers-reduced-motion:\s*reduce/);
+  assert.match(script, /dialog\.addEventListener\("close"/);
+  assert.match(script, /role="status" aria-live="polite"/);
+  assert.match(script, /:focus-visible/);
+});

@@ -27,6 +27,7 @@ export function createFamilyState() {
     version: 1,
     active: { kind: "parent", profileId: "parent-experience" },
     profiles: [],
+    deletedProfiles: [],
     snapshots: { "parent-experience": { entries: {} } },
   };
 }
@@ -61,6 +62,47 @@ export function sanitizeFamilyState(value) {
     "parent-experience",
     ...profiles.map((profile) => profile.id),
   ]);
+  const deletedProfiles = Array.isArray(value.deletedProfiles)
+    ? value.deletedProfiles
+        .filter(
+          (profile) =>
+            typeof profile?.id === "string" &&
+            /^[A-Za-z0-9_-]{6,64}$/.test(profile.id) &&
+            !allowedIds.has(profile.id) &&
+            normalizeProfileName(profile.name),
+        )
+        .slice(-8)
+        .map((profile) => ({
+          id: profile.id,
+          name: normalizeProfileName(profile.name),
+          createdAt: Number(profile.createdAt) || Date.now(),
+          deletedAt: Number(profile.deletedAt) || Date.now(),
+          encouragements: Array.isArray(profile.encouragements)
+            ? profile.encouragements
+                .filter((item) => ENCOURAGEMENT_TYPES.has(item?.type))
+                .slice(-100)
+                .map((item) => ({
+                  type: item.type,
+                  createdAt: Number(item.createdAt) || Date.now(),
+                }))
+            : [],
+          snapshot: {
+            entries:
+              profile.snapshot?.entries &&
+              typeof profile.snapshot.entries === "object"
+                ? Object.fromEntries(
+                    Object.entries(profile.snapshot.entries).filter(
+                      ([key, item]) =>
+                        typeof key === "string" && typeof item === "string",
+                    ),
+                  )
+                : {},
+            ...(Number(profile.snapshot?.updatedAt)
+              ? { updatedAt: Number(profile.snapshot.updatedAt) }
+              : {}),
+          },
+        }))
+    : [];
   const snapshots = {};
   for (const id of allowedIds) {
     const source = value.snapshots?.[id];
@@ -89,6 +131,7 @@ export function sanitizeFamilyState(value) {
       profileId: activeId,
     },
     profiles,
+    deletedProfiles,
     snapshots,
   };
 }
@@ -117,6 +160,64 @@ export function createChildProfile(
       { id, name: normalizedName, createdAt: Date.now(), encouragements: [] },
     ],
     snapshots: { ...state.snapshots, [id]: { entries: {} } },
+  };
+}
+
+export function renameChildProfile(familyState, profileId, name) {
+  const state = sanitizeFamilyState(familyState);
+  const normalizedName = normalizeProfileName(name);
+  if (!normalizedName) throw new Error("invalid_profile_name");
+  if (!state.profiles.some((profile) => profile.id === profileId)) {
+    throw new Error("profile_not_found");
+  }
+  return {
+    ...state,
+    profiles: state.profiles.map((profile) =>
+      profile.id === profileId
+        ? { ...profile, name: normalizedName }
+        : profile,
+    ),
+  };
+}
+
+export function deleteChildProfile(
+  familyState,
+  profileId,
+  now = Date.now(),
+) {
+  const state = sanitizeFamilyState(familyState);
+  const profile = state.profiles.find((item) => item.id === profileId);
+  if (!profile) throw new Error("profile_not_found");
+  const { [profileId]: snapshot = { entries: {} }, ...remainingSnapshots } =
+    state.snapshots;
+  return {
+    ...state,
+    active:
+      state.active.profileId === profileId
+        ? { kind: "parent", profileId: "parent-experience" }
+        : state.active,
+    profiles: state.profiles.filter((item) => item.id !== profileId),
+    deletedProfiles: [
+      ...state.deletedProfiles.filter((item) => item.id !== profileId),
+      { ...profile, deletedAt: now, snapshot },
+    ].slice(-8),
+    snapshots: remainingSnapshots,
+  };
+}
+
+export function restoreChildProfile(familyState, profileId) {
+  const state = sanitizeFamilyState(familyState);
+  if (state.profiles.length >= 8) throw new Error("profile_limit_reached");
+  const deleted = state.deletedProfiles.find((item) => item.id === profileId);
+  if (!deleted) throw new Error("profile_not_found");
+  const { snapshot, deletedAt: _deletedAt, ...profile } = deleted;
+  return {
+    ...state,
+    profiles: [...state.profiles, profile],
+    deletedProfiles: state.deletedProfiles.filter(
+      (item) => item.id !== profileId,
+    ),
+    snapshots: { ...state.snapshots, [profileId]: snapshot },
   };
 }
 
@@ -223,11 +324,16 @@ export function publicClassroomView(room, participants = [], answers = []) {
       teamResults[team].correct += 1;
     }
   }
+  for (const result of Object.values(teamResults)) {
+    result.energy = result.answered + result.correct * 10;
+  }
 
   return {
     code: room.code,
     siteId: room.siteId,
     mode: room.mode,
+    groupCount: Number(room.groupCount) || 4,
+    lockTeamAnswers: Boolean(room.lockTeamAnswers),
     status: room.status,
     question: room.question || "",
     options: Array.isArray(room.options) ? room.options.slice(0, 4) : [],

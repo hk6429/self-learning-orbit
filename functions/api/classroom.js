@@ -53,6 +53,8 @@ function parseRoom(row) {
     code: row.code,
     siteId: row.site_id,
     mode: row.mode,
+    groupCount: row.group_count,
+    lockTeamAnswers: Boolean(row.lock_team_answers),
     status: row.status,
     question: row.question,
     options: JSON.parse(row.options_json || "[]"),
@@ -185,15 +187,17 @@ export async function onRequestPost({ request, env }) {
       const result = await db
         .prepare(
           `INSERT OR IGNORE INTO classroom_rooms
-             (code, site_id, teacher_token_hash, mode, status,
-              created_at, updated_at, expires_at)
-           VALUES (?1, ?2, ?3, ?4, 'draft', ?5, ?5, ?6)`,
+             (code, site_id, teacher_token_hash, mode, group_count,
+              lock_team_answers, status, created_at, updated_at, expires_at)
+           VALUES (?1, ?2, ?3, ?4, ?5, ?6, 'draft', ?7, ?7, ?8)`,
         )
         .bind(
           code,
           value.siteId,
           teacherTokenHash,
           value.mode,
+          value.groupCount,
+          value.lockTeamAnswers ? 1 : 0,
           now,
           now + ROOM_LIFETIME_MS,
         )
@@ -228,16 +232,19 @@ export async function onRequestPost({ request, env }) {
     await db
       .prepare(
         `UPDATE classroom_rooms SET
-           mode = ?3, status = ?4, question = ?5, options_json = ?6,
-           correct_option = ?7, explanation = ?8, reveal_answer = ?9,
-           duration_seconds = ?10, question_version = ?11,
-           started_at = ?12, ends_at = ?13, updated_at = ?14
+           mode = ?3, group_count = ?4, lock_team_answers = ?5,
+           status = ?6, question = ?7, options_json = ?8,
+           correct_option = ?9, explanation = ?10, reveal_answer = ?11,
+           duration_seconds = ?12, question_version = ?13,
+           started_at = ?14, ends_at = ?15, updated_at = ?16
          WHERE code = ?1 AND site_id = ?2`,
       )
       .bind(
         value.code,
         value.siteId,
         value.mode,
+        value.groupCount,
+        value.lockTeamAnswers ? 1 : 0,
         value.status,
         value.question,
         JSON.stringify(value.options),
@@ -262,6 +269,27 @@ export async function onRequestPost({ request, env }) {
     if (room.status === "closed") {
       return json(request, { ok: false, error: "room_closed" }, 409);
     }
+    let team = value.team;
+    if (room.mode === "group" && !team) {
+      const existing = await db
+        .prepare(
+          `SELECT team FROM classroom_participants
+           WHERE code = ?1 AND participant_id = ?2`,
+        )
+        .bind(value.code, value.participantId)
+        .first();
+      const countRow = await db
+        .prepare(
+          `SELECT COUNT(*) AS participant_count
+           FROM classroom_participants WHERE code = ?1`,
+        )
+        .bind(value.code)
+        .first();
+      const index = Number(countRow?.participant_count) || 0;
+      team =
+        existing?.team ||
+        `第 ${index % Math.max(2, Number(room.group_count) || 4) + 1} 組`;
+    }
     await db
       .prepare(
         `INSERT INTO classroom_participants
@@ -276,7 +304,7 @@ export async function onRequestPost({ request, env }) {
         value.code,
         value.participantId,
         value.nickname,
-        value.team,
+        team,
         now,
       )
       .run();
@@ -295,13 +323,33 @@ export async function onRequestPost({ request, env }) {
     }
     const participant = await db
       .prepare(
-        `SELECT 1 FROM classroom_participants
+        `SELECT team FROM classroom_participants
          WHERE code = ?1 AND participant_id = ?2`,
       )
       .bind(value.code, value.participantId)
       .first();
     if (!participant) {
       return json(request, { ok: false, error: "join_required" }, 403);
+    }
+    if (room.mode === "group" && room.lock_team_answers && participant.team) {
+      const locked = await db
+        .prepare(
+          `SELECT a.participant_id FROM classroom_answers a
+           JOIN classroom_participants p
+             ON p.code = a.code AND p.participant_id = a.participant_id
+           WHERE a.code = ?1 AND a.question_version = ?2
+             AND p.team = ?3
+           LIMIT 1`,
+        )
+        .bind(
+          value.code,
+          value.questionVersion,
+          participant.team,
+        )
+        .first();
+      if (locked) {
+        return json(request, { ok: false, error: "team_answer_locked" }, 409);
+      }
     }
     await db
       .prepare(
