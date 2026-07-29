@@ -1,4 +1,5 @@
 import { PLATFORM_IDS } from "./_platform-presence-core.js";
+import { NATIVE_CLASSROOM_SITES } from "../../teacher-tools-core.js";
 
 const CLASS_CODE_PATTERN = /^\d{6}$/;
 const SAFE_ID_PATTERN = /^[A-Za-z0-9_-]{16,64}$/;
@@ -51,6 +52,9 @@ export function validateClassroomPayload(payload) {
   const { action, siteId } = payload;
   if (!PLATFORM_IDS.has(siteId)) {
     return { ok: false, error: "invalid_site" };
+  }
+  if (NATIVE_CLASSROOM_SITES.has(siteId)) {
+    return { ok: false, error: "native_classroom_available" };
   }
 
   if (action === "create") {

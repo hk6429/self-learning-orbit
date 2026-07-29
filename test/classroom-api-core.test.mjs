@@ -20,7 +20,7 @@ test("教師權杖與學生匿名識別碼格式受限", () => {
 test("建立課堂需正式平台、教師權杖與合法模式", () => {
   const valid = validateClassroomPayload({
     action: "create",
-    siteId: "wenhao-xiaozhuan",
+    siteId: "tulou-escape",
     teacherToken,
     mode: "group",
     groupCount: 6,
@@ -29,6 +29,15 @@ test("建立課堂需正式平台、教師權杖與合法模式", () => {
   assert.equal(valid.ok, true);
   assert.equal(valid.value.groupCount, 6);
   assert.equal(valid.value.lockTeamAnswers, true);
+  assert.deepEqual(
+    validateClassroomPayload({
+      action: "create",
+      siteId: "wenhao-xiaozhuan",
+      teacherToken,
+      mode: "group",
+    }),
+    { ok: false, error: "native_classroom_available" },
+  );
   assert.equal(
     validateClassroomPayload({
       action: "create",
@@ -43,7 +52,7 @@ test("建立課堂需正式平台、教師權杖與合法模式", () => {
 test("學生加入只需六位班級碼、暱稱及匿名裝置識別碼", () => {
   const valid = validateClassroomPayload({
     action: "join",
-    siteId: "wenhao-xiaozhuan",
+    siteId: "tulou-escape",
     code: "123456",
     participantId,
     nickname: "小明",
@@ -57,7 +66,7 @@ test("作答只接受 A 到 D 且綁定題目版本", () => {
   assert.equal(
     validateClassroomPayload({
       action: "answer",
-      siteId: "wenhao-xiaozhuan",
+      siteId: "tulou-escape",
       code: "123456",
       participantId,
       questionVersion: 3,
@@ -81,7 +90,7 @@ test("作答只接受 A 到 D 且綁定題目版本", () => {
 test("教師更新題目限制文字長度、選項數量與計時範圍", () => {
   const valid = validateClassroomPayload({
     action: "teacher_update",
-    siteId: "wenhao-xiaozhuan",
+    siteId: "tulou-escape",
     code: "123456",
     teacherToken,
     mode: "individual",
