@@ -9,7 +9,7 @@ import {
   sanitizeFamilyState,
   switchFamilyProfile,
   updateActiveSnapshot,
-} from "./family-classroom-core.js?v=3";
+} from "./family-classroom-core.js?v=4";
 import {
   SITE_CONFIGS,
   decryptSnapshot,
@@ -18,14 +18,15 @@ import {
   normalizePassportCode,
   passportSyncId,
   selectProgressEntries,
-} from "./learning-passport-core.js?v=3";
+} from "./learning-passport-core.js?v=4";
 import {
+  NATIVE_CLASSROOM_SITES,
   chooseNativeQuestion,
   createClassroomReport,
   reportsToCsv,
   sanitizeClassroomReports,
   sanitizeQuestionBank,
-} from "./teacher-tools-core.js?v=3";
+} from "./teacher-tools-core.js?v=4";
 
 const params = new URL(import.meta.url).searchParams;
 const siteConfig = SITE_CONFIGS[params.get("site")];
@@ -44,6 +45,9 @@ const passportCodeKey = "danai-learning-passport-code";
 const passportSyncKey = siteConfig
   ? `danai-learning-passport-sync:${siteConfig.id}`
   : "";
+const hasNativeClassroom = Boolean(
+  siteConfig && NATIVE_CLASSROOM_SITES.has(siteConfig.id),
+);
 
 if (siteConfig && !document.getElementById("danai-family-classroom")) {
   mountHub();
@@ -52,7 +56,10 @@ if (siteConfig && !document.getElementById("danai-family-classroom")) {
 function mountHub() {
   const host = document.createElement("section");
   host.id = "danai-family-classroom";
-  host.setAttribute("aria-label", `${siteConfig.name}家庭與課堂中心`);
+  host.setAttribute(
+    "aria-label",
+    `${siteConfig.name}${hasNativeClassroom ? "家庭共學中心" : "家庭與課堂中心"}`,
+  );
   const shadow = host.attachShadow({ mode: "open" });
   shadow.innerHTML = `
     <style>
@@ -101,6 +108,10 @@ function mountHub() {
         font-weight:800; }
       .tab[aria-selected="true"] { border-color:#ffbf69;
         background:rgba(255,191,105,.13); color:#ffd6a3; }
+      .native-note { margin:14px 20px 0; padding:12px 14px;
+        border:1px solid rgba(104,228,255,.28); border-radius:12px;
+        background:rgba(104,228,255,.07); color:#bff5ff;
+        font-size:11px; line-height:1.6; }
       main { padding:18px 20px 24px; }
       [data-panel][hidden], [data-view][hidden], [data-projection][hidden] {
         display:none;
@@ -199,17 +210,17 @@ function mountHub() {
       }
     </style>
     <button class="launcher" type="button" aria-haspopup="dialog">
-      <span><strong>家庭／課堂</strong><small data-launcher-status>選擇使用模式</small></span>
+      <span><strong>${hasNativeClassroom ? "家庭共學" : "家庭／課堂"}</strong><small data-launcher-status>選擇使用模式</small></span>
     </button>
     <dialog aria-labelledby="hub-title">
       <div class="shell">
-        <header><div><h2 id="hub-title">${siteConfig.name}・家庭與課堂中心</h2>
-          <p>家長紀錄不混用，教師投影不公開個別錯誤。</p></div>
+        <header><div><h2 id="hub-title">${siteConfig.name}・${hasNativeClassroom ? "家庭共學中心" : "家庭與課堂中心"}</h2>
+          <p>${hasNativeClassroom ? "沿用本站原生班級設計，這裡只處理家庭紀錄與鼓勵。" : "家長紀錄不混用，教師投影不公開個別錯誤。"}</p></div>
           <button class="close" type="button" aria-label="關閉">×</button></header>
-        <nav class="tabs" aria-label="家庭與課堂功能">
+        ${hasNativeClassroom ? `<div class="native-note" role="note">本站已有內建班級、教師後台或課堂功能；請使用網站原本的入口，避免兩套班級紀錄互相混淆。</div>` : `<nav class="tabs" aria-label="家庭與課堂功能">
           <button class="tab" type="button" data-tab="family" aria-selected="true">P1 家庭共學</button>
           <button class="tab" type="button" data-tab="classroom" aria-selected="false">P2 教師課堂</button>
-        </nav>
+        </nav>`}
         <main>
           <section data-panel="family" class="stack">
             <article class="card">
@@ -356,8 +367,8 @@ function mountHub() {
   const dialog = shadow.querySelector("dialog");
   let familyState = loadFamily();
   let familyFingerprint = "";
-  let teacherSession = loadJson(teacherKey, null);
-  let studentSession = loadJson(studentKey, null);
+  let teacherSession = hasNativeClassroom ? null : loadJson(teacherKey, null);
+  let studentSession = hasNativeClassroom ? null : loadJson(studentKey, null);
   let teacherRoom = null;
   let studentRoom = null;
   let questionBank = sanitizeQuestionBank(loadJson(questionBankKey, []));
@@ -1291,8 +1302,10 @@ function mountHub() {
   renderQuestionBank();
   renderReports();
   pollCheers();
-  teacherPollTimer = window.setInterval(pollTeacher, 2500);
-  studentPollTimer = window.setInterval(pollStudent, 2500);
+  if (!hasNativeClassroom) {
+    teacherPollTimer = window.setInterval(pollTeacher, 2500);
+    studentPollTimer = window.setInterval(pollStudent, 2500);
+  }
   cheerPollTimer = window.setInterval(pollCheers, 5000);
   clockTimer = window.setInterval(() => {
     const timer = shadow.querySelector("[data-project-timer]");

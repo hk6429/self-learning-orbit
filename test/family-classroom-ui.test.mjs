@@ -81,3 +81,13 @@ test("P3 對鍵盤、焦點與減少動態偏好保留可用性", () => {
   assert.match(script, /role="status" aria-live="polite"/);
   assert.match(script, /:focus-visible/);
 });
+
+test("原站已有班級功能時只顯示家庭共學，不啟動第二套課堂輪詢", () => {
+  assert.match(script, /NATIVE_CLASSROOM_SITES\.has/);
+  assert.match(script, /沿用本站原生班級設計/);
+  assert.match(script, /請使用網站原本的入口/);
+  assert.match(
+    script,
+    /if\s*\(!hasNativeClassroom\)\s*\{[\s\S]*setInterval\(pollTeacher/,
+  );
+});

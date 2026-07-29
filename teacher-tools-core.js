@@ -1,5 +1,16 @@
 const ANSWERS = ["A", "B", "C", "D"];
 
+export const NATIVE_CLASSROOM_SITES = new Set([
+  "wenhao-xiaozhuan",
+  "wenyan-jieyou-zhan",
+  "seven-habits-quest",
+  "vocab-duel",
+  "zizizhuji",
+  "bxws-math",
+  "science-hero",
+  "reading-expedition",
+]);
+
 function safeText(value, maxLength) {
   return String(value || "")
     .replace(/[<>{}]/g, "")

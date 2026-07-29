@@ -2,12 +2,26 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  NATIVE_CLASSROOM_SITES,
   chooseNativeQuestion,
   createClassroomReport,
   reportsToCsv,
   sanitizeClassroomReports,
   sanitizeQuestionBank,
 } from "../teacher-tools-core.js";
+
+test("已有原生班級設計的網站不重複掛上共用教師課堂", () => {
+  assert.deepEqual([...NATIVE_CLASSROOM_SITES].sort(), [
+    "bxws-math",
+    "reading-expedition",
+    "science-hero",
+    "seven-habits-quest",
+    "vocab-duel",
+    "wenhao-xiaozhuan",
+    "wenyan-jieyou-zhan",
+    "zizizhuji",
+  ]);
+});
 
 test("匯入平台目前題目時只採用完整且可見度最高的題目", () => {
   const result = chooseNativeQuestion([
