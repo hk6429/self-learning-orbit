@@ -6,6 +6,24 @@
     "https://self-learning-orbit.pages.dev/api/platform-presence";
   if (!siteId || document.getElementById("danai-public-counter")) return;
 
+  if (!document.getElementById("danai-learning-passport-loader")) {
+    const passportScript = document.createElement("script");
+    passportScript.id = "danai-learning-passport-loader";
+    passportScript.type = "module";
+    passportScript.src =
+      `https://self-learning-orbit.pages.dev/learning-passport.js?v=1&site=${encodeURIComponent(siteId)}`;
+    document.head.append(passportScript);
+  }
+
+  if (!document.getElementById("danai-family-classroom-loader")) {
+    const hubScript = document.createElement("script");
+    hubScript.id = "danai-family-classroom-loader";
+    hubScript.type = "module";
+    hubScript.src =
+      `https://self-learning-orbit.pages.dev/family-classroom.js?v=1&site=${encodeURIComponent(siteId)}`;
+    document.head.append(hubScript);
+  }
+
   document.getElementById("gc-visitors")?.remove();
 
   const mount = () => {

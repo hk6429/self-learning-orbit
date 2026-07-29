@@ -70,3 +70,65 @@ BEGIN
   ON CONFLICT(site_id, day_key) DO UPDATE
   SET visits = visits + 1;
 END;
+
+CREATE TABLE IF NOT EXISTS learning_sync_snapshots (
+  site_id TEXT NOT NULL,
+  sync_id TEXT NOT NULL,
+  cipher_text TEXT NOT NULL,
+  iv TEXT NOT NULL,
+  snapshot_version INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL,
+  expires_at INTEGER NOT NULL,
+  PRIMARY KEY (site_id, sync_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_learning_sync_snapshots_expires_at
+ON learning_sync_snapshots (expires_at);
+
+CREATE TABLE IF NOT EXISTS classroom_rooms (
+  code TEXT PRIMARY KEY,
+  site_id TEXT NOT NULL,
+  teacher_token_hash TEXT NOT NULL,
+  mode TEXT NOT NULL,
+  status TEXT NOT NULL,
+  question TEXT NOT NULL DEFAULT '',
+  options_json TEXT NOT NULL DEFAULT '[]',
+  correct_option TEXT NOT NULL DEFAULT 'A',
+  explanation TEXT NOT NULL DEFAULT '',
+  reveal_answer INTEGER NOT NULL DEFAULT 0,
+  duration_seconds INTEGER NOT NULL DEFAULT 60,
+  question_version INTEGER NOT NULL DEFAULT 0,
+  started_at INTEGER,
+  ends_at INTEGER,
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL,
+  expires_at INTEGER NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_classroom_rooms_expires_at
+ON classroom_rooms (expires_at);
+
+CREATE TABLE IF NOT EXISTS classroom_participants (
+  code TEXT NOT NULL,
+  participant_id TEXT NOT NULL,
+  nickname TEXT NOT NULL,
+  team TEXT NOT NULL DEFAULT '',
+  joined_at INTEGER NOT NULL,
+  last_seen INTEGER NOT NULL,
+  PRIMARY KEY (code, participant_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_classroom_participants_code_last_seen
+ON classroom_participants (code, last_seen);
+
+CREATE TABLE IF NOT EXISTS classroom_answers (
+  code TEXT NOT NULL,
+  participant_id TEXT NOT NULL,
+  question_version INTEGER NOT NULL,
+  answer TEXT NOT NULL,
+  answered_at INTEGER NOT NULL,
+  PRIMARY KEY (code, participant_id, question_version)
+);
+
+CREATE INDEX IF NOT EXISTS idx_classroom_answers_code_version
+ON classroom_answers (code, question_version);
