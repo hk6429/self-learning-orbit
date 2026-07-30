@@ -17,6 +17,29 @@ test("共用計數器固定在右下角並顯示三項數字", () => {
   assert.match(script, /累積到訪/);
 });
 
+test("共用工具預設收合並用同一顆按鈕切換全部入口", () => {
+  assert.match(script, /class="tools" id="danai-tools-panel" hidden/);
+  assert.match(script, /class="tools-toggle"/);
+  assert.match(script, /aria-expanded="false"/);
+  assert.match(script, /aria-label="展開學習工具"/);
+  assert.match(script, /setCollapsed\(true\)/);
+  assert.match(script, /toggle\.addEventListener\("click"/);
+  assert.match(script, /"danai-learning-passport"/);
+  assert.match(script, /"danai-family-classroom"/);
+  assert.match(script, /companion\.hidden = collapsed/);
+  assert.match(script, /MutationObserver/);
+});
+
+test("收合按鈕保留可觸控尺寸、鍵盤焦點與減少動態支援", () => {
+  assert.match(script, /\.tools-toggle\s*\{[\s\S]*width:\s*46px/);
+  assert.match(script, /\.tools-toggle\s*\{[\s\S]*height:\s*46px/);
+  assert.match(script, /\.tools-toggle\s*\{[\s\S]*position:\s*absolute/);
+  assert.match(script, /\.tools-toggle\[aria-expanded="true"\]\s*\{[\s\S]*right:\s*calc\(100% \+ 8px\)/);
+  assert.match(script, /\.tools-toggle:focus-visible/);
+  assert.match(script, /prefers-reduced-motion:\s*reduce/);
+  assert.match(script, /aria-controls="danai-tools-panel"/);
+});
+
 test("共用計數器撤除舊 GoatCounter 顯示並保留匿名工作階段", () => {
   assert.match(script, /getElementById\("gc-visitors"\)\?\.remove\(\)/);
   assert.match(script, /sessionStorage/);

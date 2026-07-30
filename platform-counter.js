@@ -46,6 +46,63 @@
           font-family: -apple-system, BlinkMacSystemFont, "PingFang TC",
             "Noto Sans TC", system-ui, sans-serif;
         }
+        * {
+          box-sizing: border-box;
+        }
+        button {
+          font: inherit;
+        }
+        .tools {
+          display: grid;
+          justify-items: end;
+          gap: 8px;
+        }
+        .tools[hidden] {
+          display: none;
+        }
+        .tools-toggle {
+          position: absolute;
+          right: 0;
+          bottom: 0;
+          display: grid;
+          place-items: center;
+          width: 46px;
+          height: 46px;
+          padding: 0;
+          border: 1px solid rgba(104, 228, 255, 0.52);
+          border-radius: 50%;
+          background: rgba(7, 9, 22, 0.92);
+          box-shadow: 0 8px 28px rgba(0, 0, 0, 0.42);
+          color: #68e4ff;
+          cursor: pointer;
+          pointer-events: auto;
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
+          transition:
+            border-color 160ms ease,
+            background 160ms ease,
+            transform 160ms ease;
+        }
+        .tools-toggle:hover {
+          border-color: #68e4ff;
+          background: rgba(16, 25, 47, 0.97);
+          transform: translateY(-2px);
+        }
+        .tools-toggle:focus-visible {
+          outline: 3px solid rgba(104, 228, 255, 0.48);
+          outline-offset: 3px;
+        }
+        .tools-toggle-icon {
+          font-size: 20px;
+          line-height: 1;
+          transition: transform 160ms ease;
+        }
+        .tools-toggle[aria-expanded="true"] .tools-toggle-icon {
+          transform: rotate(90deg);
+        }
+        .tools-toggle[aria-expanded="true"] {
+          right: calc(100% + 8px);
+        }
         .orbit-home {
           display: inline-flex;
           align-items: center;
@@ -174,28 +231,77 @@
             font-size: 14px;
           }
         }
+        @media (prefers-reduced-motion: reduce) {
+          *, *::before, *::after {
+            transition: none !important;
+          }
+        }
       </style>
-      <a
-        class="orbit-home"
-        href="https://self-learning-orbit.pages.dev/"
-        target="_self"
-        aria-label="回到自學星圖總覽"
-      >
-        <b aria-hidden="true">✦</b>
-        <span>自學星圖</span>
-      </a>
-      <div class="counter">
-        <p><strong data-count="online">—</strong><span><i></i>目前在線</span></p>
-        <p><strong data-count="today">—</strong><span>今日到訪</span></p>
-        <p><strong data-count="total">—</strong><span>累積到訪</span></p>
-        <small>匿名統計・自 2026/7/27 起</small>
-        <span class="status" role="status" aria-live="polite">正在載入即時到訪統計</span>
+      <div class="tools" id="danai-tools-panel" hidden>
+        <a
+          class="orbit-home"
+          href="https://self-learning-orbit.pages.dev/"
+          target="_self"
+          aria-label="回到自學星圖總覽"
+        >
+          <b aria-hidden="true">✦</b>
+          <span>自學星圖</span>
+        </a>
+        <div class="counter">
+          <p><strong data-count="online">—</strong><span><i></i>目前在線</span></p>
+          <p><strong data-count="today">—</strong><span>今日到訪</span></p>
+          <p><strong data-count="total">—</strong><span>累積到訪</span></p>
+          <small>匿名統計・自 2026/7/27 起</small>
+          <span class="status" role="status" aria-live="polite">正在載入即時到訪統計</span>
+        </div>
       </div>
+      <button
+        class="tools-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="danai-tools-panel"
+        aria-label="展開學習工具"
+        title="展開學習工具"
+      >
+        <span class="tools-toggle-icon" aria-hidden="true">☰</span>
+      </button>
     `;
     document.body.append(host);
 
+    const tools = shadow.querySelector(".tools");
+    const toggle = shadow.querySelector(".tools-toggle");
+    const toggleIcon = shadow.querySelector(".tools-toggle-icon");
     const counter = shadow.querySelector(".counter");
     const status = shadow.querySelector(".status");
+    const companionIds = [
+      "danai-learning-passport",
+      "danai-family-classroom",
+    ];
+    let collapsed = true;
+
+    const syncCompanionLaunchers = () => {
+      for (const id of companionIds) {
+        const companion = document.getElementById(id);
+        if (companion) companion.hidden = collapsed;
+      }
+    };
+    const companionObserver = new MutationObserver(syncCompanionLaunchers);
+    companionObserver.observe(document.body, { childList: true });
+    syncCompanionLaunchers();
+
+    const setCollapsed = (nextCollapsed) => {
+      collapsed = nextCollapsed;
+      tools.hidden = collapsed;
+      toggle.setAttribute("aria-expanded", String(!collapsed));
+      const label = collapsed ? "展開學習工具" : "收合學習工具";
+      toggle.setAttribute("aria-label", label);
+      toggle.title = label;
+      toggleIcon.textContent = collapsed ? "☰" : "×";
+      syncCompanionLaunchers();
+    };
+    toggle.addEventListener("click", () => setCollapsed(!collapsed));
+    setCollapsed(true);
+
     const values = Object.fromEntries(
       [...shadow.querySelectorAll("[data-count]")].map((element) => [
         element.dataset.count,
