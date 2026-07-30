@@ -8,7 +8,7 @@
       content="大乃老師的遊戲化自學網站入口，以 3D 星軌卡片快速探索國文、英文、數學、自然、自我領導與教師成長網站。"
     />
     <title>自學星圖｜大乃老師的遊戲化學習宇宙</title>
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./styles.css?v=20260730-collapse" />
   </head>
   <body>
     <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -131,9 +131,11 @@
     </main>
 
     <aside
+      id="visitor-stats-panel"
       class="visitor-stats"
       data-visitor-stats
       aria-label="網站即時到訪統計"
+      hidden
     >
       <p>
         <strong data-visitor-count="online">—</strong>
@@ -152,6 +154,17 @@
         正在載入即時到訪統計
       </span>
     </aside>
+    <button
+      class="visitor-stats-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="visitor-stats-panel"
+      aria-label="展開即時到訪統計"
+      title="展開即時到訪統計"
+      data-visitor-stats-toggle
+    >
+      <span aria-hidden="true">☰</span>
+    </button>
 
     <dialog id="guide-dialog" class="portal-dialog guide-dialog" aria-labelledby="guide-title">
       <div class="dialog-shell">
@@ -199,7 +212,7 @@
       </div>
     </dialog>
 
-    <script src="./app.js"></script>
+    <script src="./app.js?v=20260730-collapse"></script>
     <script>
       window.goatcounter = { path: () => location.host + "/" };
     </script>

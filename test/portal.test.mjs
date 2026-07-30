@@ -70,13 +70,19 @@ test("互動與無障礙合約存在", () => {
   assert.match(app, /sessionStorage\.getItem\("self-learning-orbit:visit-session"\)/);
 });
 
-test("公開計數器固定在畫面右下角且不攔截操作", () => {
+test("公開計數器預設收合，展開後仍固定在畫面右下角且不攔截操作", () => {
   assert.match(html, /<\/main>[\s\S]*data-visitor-stats/);
+  assert.match(html, /id="visitor-stats-panel"[\s\S]*hidden/);
+  assert.match(html, /data-visitor-stats-toggle/);
+  assert.match(html, /aria-label="展開即時到訪統計"/);
   assert.match(
     css,
     /\.visitor-stats\s*\{[\s\S]*position:\s*fixed;[\s\S]*right:\s*max\(14px,\s*env\(safe-area-inset-right\)\);[\s\S]*bottom:\s*max\(14px,\s*env\(safe-area-inset-bottom\)\);/,
   );
   assert.match(css, /\.visitor-stats\s*\{[\s\S]*pointer-events:\s*none/);
+  assert.match(css, /\.visitor-stats-toggle\s*\{[\s\S]*width:\s*46px;[\s\S]*height:\s*46px/);
+  assert.match(app, /setExpanded\(false\)/);
+  assert.match(app, /收合即時到訪統計/);
 });
 
 test("老師與家長推薦流程皆有可用目標", () => {

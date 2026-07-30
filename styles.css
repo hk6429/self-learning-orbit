@@ -159,6 +159,52 @@ h1 {
   pointer-events: none;
 }
 
+.visitor-stats[hidden] {
+  display: none;
+}
+
+.visitor-stats-toggle {
+  position: fixed;
+  right: max(14px, env(safe-area-inset-right));
+  bottom: max(14px, env(safe-area-inset-bottom));
+  z-index: 71;
+  display: grid;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  place-items: center;
+  border: 1px solid rgba(104, 228, 255, 0.52);
+  border-radius: 50%;
+  color: var(--cyan);
+  background: rgba(9, 9, 22, 0.9);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.34);
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.visitor-stats-toggle:hover {
+  border-color: var(--cyan);
+  background: rgba(16, 25, 47, 0.96);
+  transform: translateY(-2px);
+}
+
+.visitor-stats-toggle:focus-visible {
+  outline: 3px solid rgba(104, 228, 255, 0.48);
+  outline-offset: 3px;
+}
+
+.visitor-stats-toggle[aria-expanded="true"] {
+  transform: translateX(-338px);
+}
+
+.visitor-stats-toggle[aria-expanded="true"]:hover {
+  transform: translate(-338px, -2px);
+}
+
 .visitor-stats p {
   display: grid;
   gap: 1px;
@@ -1151,6 +1197,14 @@ h1 {
   .visitor-stats > small {
     padding-block: 3px;
     font-size: 7px;
+  }
+
+  .visitor-stats-toggle[aria-expanded="true"] {
+    transform: translateX(-188px);
+  }
+
+  .visitor-stats-toggle[aria-expanded="true"]:hover {
+    transform: translate(-188px, -2px);
   }
 
   .orbit-status span {

@@ -849,6 +849,21 @@ function drawStarfield() {
 function startPresenceCounter() {
   const visitorStats = document.querySelector("[data-visitor-stats]");
   if (!visitorStats) return;
+  const toggle = document.querySelector("[data-visitor-stats-toggle]");
+
+  const setExpanded = (expanded) => {
+    visitorStats.hidden = !expanded;
+    if (!toggle) return;
+    toggle.setAttribute("aria-expanded", String(expanded));
+    const label = expanded ? "收合即時到訪統計" : "展開即時到訪統計";
+    toggle.setAttribute("aria-label", label);
+    toggle.title = label;
+    toggle.querySelector("span").textContent = expanded ? "×" : "☰";
+  };
+  toggle?.addEventListener("click", () => {
+    setExpanded(toggle.getAttribute("aria-expanded") !== "true");
+  });
+  setExpanded(false);
 
   const countElements = Object.fromEntries(
     [...visitorStats.querySelectorAll("[data-visitor-count]")].map((element) => [
