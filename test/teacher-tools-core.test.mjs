@@ -18,6 +18,7 @@ test("已有原生班級設計的網站不重複掛上共用教師課堂", () =>
     "seven-habits-quest",
     "vocab-duel",
     "wenhao-xiaozhuan",
+    "wenxin-diaolong",
     "wenyan-jieyou-zhan",
     "zizizhuji",
   ]);

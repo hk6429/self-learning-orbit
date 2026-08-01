@@ -1,6 +1,7 @@
 const ANSWERS = ["A", "B", "C", "D"];
 
 export const NATIVE_CLASSROOM_SITES = new Set([
+  "wenxin-diaolong",
   "wenhao-xiaozhuan",
   "wenyan-jieyou-zhan",
   "seven-habits-quest",

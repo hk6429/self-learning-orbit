@@ -12,9 +12,10 @@ import {
   summarizeProgress,
 } from "../learning-passport-core.js";
 
-test("學習護照涵蓋正式自學星圖的 14 座平台", () => {
-  assert.equal(Object.keys(SITE_CONFIGS).length, 14);
+test("學習護照涵蓋正式自學星圖的 15 座平台", () => {
+  assert.equal(Object.keys(SITE_CONFIGS).length, 15);
   for (const siteId of [
+    "wenxin-diaolong",
     "wenhao-xiaozhuan",
     "tulou-escape",
     "wenyan-jieyou-zhan",
@@ -89,6 +90,25 @@ test("進度摘要提供已保存資料、學習量與最近活動", () => {
   assert.equal(summary.metrics.some((item) => item.label === "學習字詞"), true);
   assert.equal(summary.metrics.some((item) => item.label === "連續學習"), true);
   assert.equal(summary.lastActivity, "2026-07-29");
+});
+
+test("文心雕龍護照摘要顯示累積答題、正確率與尋回章回", () => {
+  const summary = summarizeProgress({
+    wxdl_meta: JSON.stringify({
+      xp: { totalAnswered: 40, totalCorrect: 30 },
+      adventure: { chapters: {
+        zhuangzi: { chapterStatus: "stable" },
+        quyuan: { chapterStatus: "locked" },
+      } },
+      profile: { updatedAt: "2026-08-02T01:00:00.000Z" },
+    }),
+  }, SITE_CONFIGS["wenxin-diaolong"]);
+  assert.deepEqual(summary.metrics, [
+    { label: "累積答題", value: 40 },
+    { label: "答題正確率", value: "75%" },
+    { label: "尋回章回", value: 1 },
+  ]);
+  assert.equal(summary.lastActivity, "2026-08-02");
 });
 
 test("進度快照以護照碼加密後可還原且錯誤護照碼無法解密", async () => {

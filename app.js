@@ -167,6 +167,18 @@ const sites = [
     url: "https://reading-expedition-2u1.pages.dev/",
     image: "./assets/previews/reading-expedition.webp",
   },
+  {
+    title: "文心雕龍",
+    group: "language",
+    subject: "國文 × 文法修辭",
+    caption: "穿越文豪的文心試煉",
+    description: "從國小到高中分級練習修辭、文法與格律，穿越先秦與楚地，在故事闖關中迎戰莊子、屈原。",
+    stage: "國小～高中",
+    mode: "章回冒險",
+    duration: "建議 10–20 分鐘",
+    url: "https://wenxin-diaolong.pages.dev/",
+    image: "./assets/previews/wenxin-diaolong.webp",
+  },
 ];
 
 const stage = document.querySelector("#orbit-stage");
@@ -213,7 +225,7 @@ const guideOptions = {
   teacher: {
     label: "老師",
     goals: [
-      { id: "language-class", label: "設計國語文課", indexes: [13, 2, 1] },
+      { id: "language-class", label: "設計國語文課", indexes: [14, 13, 2] },
       { id: "leadership-class", label: "帶自我領導力活動", indexes: [3, 4, 5] },
       { id: "teacher-growth", label: "練習教師與導師實務", indexes: [6, 7] },
       { id: "stem-practice", label: "安排數理英自主練習", indexes: [8, 10, 12] },
@@ -223,7 +235,7 @@ const guideOptions = {
     label: "家長",
     goals: [
       { id: "language-basics", label: "加強字音字形與成語", indexes: [9, 11] },
-      { id: "reading", label: "培養閱讀與文言理解", indexes: [13, 0, 2] },
+      { id: "reading", label: "培養閱讀與文言理解", indexes: [14, 13, 0] },
       { id: "math-science", label: "練習數學或自然", indexes: [10, 12] },
       { id: "english", label: "複習英文單字", indexes: [8] },
       { id: "self-leadership", label: "練習自律與自我管理", indexes: [3, 4, 5] },

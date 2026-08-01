@@ -6,6 +6,11 @@ function config(id, name, include, exclude = []) {
 }
 
 export const SITE_CONFIGS = Object.freeze({
+  "wenxin-diaolong": config(
+    "wenxin-diaolong",
+    "文心雕龍",
+    [{ exact: "wxdl_meta" }, { exact: "wenxin-reading-progress-v1" }],
+  ),
   "wenhao-xiaozhuan": config(
     "wenhao-xiaozhuan",
     "文豪笑傳",
@@ -211,7 +216,16 @@ export function summarizeProgress(entries, siteConfig) {
     .filter((value) => value !== null);
   const metrics = [];
 
-  if (siteConfig?.id === "vocab-duel") {
+  if (siteConfig?.id === "wenxin-diaolong") {
+    const meta = parseJson(entries.wxdl_meta);
+    const answered = Number(meta?.xp?.totalAnswered) || 0;
+    const correct = Number(meta?.xp?.totalCorrect) || 0;
+    const completed = Object.values(meta?.adventure?.chapters || {})
+      .filter((chapter) => ["found", "stable"].includes(chapter?.chapterStatus)).length;
+    metrics.push(metric("累積答題", answered));
+    metrics.push(metric("答題正確率", answered ? `${Math.round((correct / answered) * 100)}%` : "0%"));
+    metrics.push(metric("尋回章回", completed));
+  } else if (siteConfig?.id === "vocab-duel") {
     const progress = parseJson(entries.vd_progress);
     const meta = parseJson(entries.vd_meta);
     if (progress && typeof progress === "object") {

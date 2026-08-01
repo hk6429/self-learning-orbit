@@ -1,6 +1,11 @@
 export const ONLINE_WINDOW_MS = 5 * 60 * 1000;
 
 const platformHosts = {
+  "wenxin-diaolong": [
+    "wenxin-diaolong.pages.dev",
+    "wenxin-diaolong.vercel.app",
+    "wenxin-diaolong.netlify.app",
+  ],
   "wenhao-xiaozhuan": [
     "wenhao-xiaozhuan.pages.dev",
     "wenhao-xiaozhuan.vercel.app",

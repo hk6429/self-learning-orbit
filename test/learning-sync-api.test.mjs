@@ -51,7 +51,7 @@ test("同步端點拒絕其他網站冒用正式平台", async () => {
   });
 });
 
-test("同步預檢只開放已登錄的 14 站來源", async () => {
+test("同步預檢只開放已登錄的 15 站來源", async () => {
   const allowed = await onRequestOptions({
     request: new Request("https://self-learning-orbit.pages.dev/api/learning-sync", {
       method: "OPTIONS",

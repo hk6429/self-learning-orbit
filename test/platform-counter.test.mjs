@@ -55,7 +55,7 @@ test("共用元件提供回到自學星圖的清楚入口", () => {
   assert.match(script, /\.orbit-home\s*\{[\s\S]*pointer-events:\s*auto/);
 });
 
-test("共用元件為 14 站載入學習護照與紀錄中心", () => {
+test("共用元件為 15 站載入學習護照與紀錄中心", () => {
   assert.match(script, /learning-passport\.js/);
   assert.match(script, /family-classroom\.js/);
   assert.match(script, /site=/);
