@@ -78,7 +78,27 @@ const platformHosts = {
   ],
 };
 
+const examHosts = {
+  "cap-guowen": ["cap-guowen.pages.dev", "cap-guowen.vercel.app", "cap-guowen.netlify.app"],
+  "cap-english": ["cap-english.pages.dev", "cap-english-chi.vercel.app", "cap-english.netlify.app"],
+  "cap-math": ["cap-math.pages.dev", "cap-math.vercel.app", "cap-math.netlify.app"],
+  "cap-shehui": ["cap-shehui.pages.dev", "cap-shehui.vercel.app", "cap-shehui.netlify.app"],
+  "cap-ziran": ["cap-ziran.pages.dev", "cap-ziran.vercel.app", "cap-ziran.netlify.app"],
+  "gsat-guowen": ["gsat-guowen.pages.dev", "gsat-guowen.vercel.app", "gsat-guowen.netlify.app"],
+  "gsat-english": ["gsat-english.pages.dev", "gsat-english.vercel.app", "gsat-english.netlify.app"],
+  "gsat-math": ["gsat-math.pages.dev", "gsat-math.vercel.app", "gsat-math.netlify.app"],
+  "gsat-shehui": ["gsat-shehui.pages.dev", "gsat-shehui.vercel.app", "gsat-shehui.netlify.app"],
+  "gsat-ziran": ["gsat-ziran.pages.dev", "gsat-ziran.vercel.app", "gsat-ziran.netlify.app"],
+  "tvet-guowen": ["tvet-guowen.pages.dev", "tvet-guowen.vercel.app", "tvet-guowen.netlify.app"],
+  "tvet-english": ["tvet-english.pages.dev", "tvet-english.vercel.app", "tvet-english.netlify.app"],
+  "tvet-math": ["tvet-math.pages.dev", "tvet-math.vercel.app", "tvet-math.netlify.app"],
+};
+
 export const PLATFORM_IDS = new Set(Object.keys(platformHosts));
+export const PRESENCE_IDS = new Set([
+  ...Object.keys(platformHosts),
+  ...Object.keys(examHosts),
+]);
 
 export function getTaipeiDayKey(timestamp) {
   return new Date(timestamp + 8 * 60 * 60 * 1000).toISOString().slice(0, 10);
@@ -120,9 +140,9 @@ function matchesHost(hostname, allowedHost) {
   );
 }
 
-export function isAllowedPlatformOrigin(siteId, origin) {
+function allowedOrigin(hostsBySite, siteId, origin) {
   const url = parseOrigin(origin);
-  const hosts = platformHosts[siteId];
+  const hosts = hostsBySite[siteId];
   if (!url || !hosts) return null;
   if (isLocal(url) || hosts.some((host) => matchesHost(url.hostname, host))) {
     return url.origin;
@@ -130,15 +150,31 @@ export function isAllowedPlatformOrigin(siteId, origin) {
   return null;
 }
 
-export function isKnownPlatformOrigin(origin) {
+function knownOrigin(hostsBySite, origin) {
   const url = parseOrigin(origin);
   if (!url) return null;
   if (isLocal(url)) return url.origin;
 
-  const known = Object.values(platformHosts)
+  const known = Object.values(hostsBySite)
     .flat()
     .some((host) => matchesHost(url.hostname, host));
   return known ? url.origin : null;
+}
+
+export function isAllowedPlatformOrigin(siteId, origin) {
+  return allowedOrigin(platformHosts, siteId, origin);
+}
+
+export function isKnownPlatformOrigin(origin) {
+  return knownOrigin(platformHosts, origin);
+}
+
+export function isAllowedPresenceOrigin(siteId, origin) {
+  return allowedOrigin({ ...platformHosts, ...examHosts }, siteId, origin);
+}
+
+export function isKnownPresenceOrigin(origin) {
+  return knownOrigin({ ...platformHosts, ...examHosts }, origin);
 }
 
 export function toSafeCount(value) {

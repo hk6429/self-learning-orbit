@@ -3,8 +3,11 @@ import test from "node:test";
 
 import {
   PLATFORM_IDS,
+  PRESENCE_IDS,
   getTaipeiDayKey,
+  isAllowedPresenceOrigin,
   isAllowedPlatformOrigin,
+  isKnownPresenceOrigin,
   isKnownPlatformOrigin,
   isValidSessionId,
 } from "../functions/api/_platform-presence-core.js";
@@ -16,6 +19,32 @@ test("共用服務只接受 15 座自學平台", () => {
   assert.equal(PLATFORM_IDS.has("science-hero"), true);
   assert.equal(PLATFORM_IDS.has("reading-expedition"), true);
   assert.equal(PLATFORM_IDS.has("self-learning-orbit"), false);
+});
+
+test("到訪統計另接受 13 座考試站，但不開放學習服務權限", () => {
+  const examIds = [
+    "cap-guowen", "cap-english", "cap-math", "cap-shehui", "cap-ziran",
+    "gsat-guowen", "gsat-english", "gsat-math", "gsat-shehui", "gsat-ziran",
+    "tvet-guowen", "tvet-english", "tvet-math",
+  ];
+  assert.equal(PRESENCE_IDS.size, 28);
+  for (const siteId of examIds) {
+    assert.equal(PRESENCE_IDS.has(siteId), true, siteId);
+    assert.equal(PLATFORM_IDS.has(siteId), false, `${siteId} 不得取得學習服務權限`);
+  }
+  assert.equal(
+    isAllowedPresenceOrigin("cap-english", "https://cap-english-chi.vercel.app"),
+    "https://cap-english-chi.vercel.app",
+  );
+  assert.equal(
+    isAllowedPresenceOrigin("tvet-math", "https://tvet-math.pages.dev"),
+    "https://tvet-math.pages.dev",
+  );
+  assert.equal(
+    isKnownPresenceOrigin("https://gsat-ziran.netlify.app"),
+    "https://gsat-ziran.netlify.app",
+  );
+  assert.equal(isKnownPlatformOrigin("https://gsat-ziran.netlify.app"), null);
 });
 
 test("平台來源必須和站點識別碼相符", () => {

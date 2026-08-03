@@ -1,8 +1,8 @@
 import {
-  PLATFORM_IDS,
+  PRESENCE_IDS,
   getTaipeiDayKey,
-  isAllowedPlatformOrigin,
-  isKnownPlatformOrigin,
+  isAllowedPresenceOrigin,
+  isKnownPresenceOrigin,
   isValidSessionId,
   readPlatformStats,
 } from "./_platform-presence-core.js";
@@ -14,7 +14,7 @@ const JSON_HEADERS = {
 };
 
 function responseHeaders(request) {
-  const origin = isKnownPlatformOrigin(request.headers.get("Origin"));
+  const origin = isKnownPresenceOrigin(request.headers.get("Origin"));
   return {
     ...JSON_HEADERS,
     ...(origin
@@ -37,13 +37,13 @@ function json(request, body, status = 200) {
 
 function originMatchesSite(request, siteId) {
   const origin = request.headers.get("Origin");
-  return !origin || Boolean(isAllowedPlatformOrigin(siteId, origin));
+  return !origin || Boolean(isAllowedPresenceOrigin(siteId, origin));
 }
 
 export function onRequestOptions({ request }) {
   if (
     request.headers.get("Origin") &&
-    !isKnownPlatformOrigin(request.headers.get("Origin"))
+    !isKnownPresenceOrigin(request.headers.get("Origin"))
   ) {
     return json(request, { ok: false, error: "origin_not_allowed" }, 403);
   }
@@ -56,7 +56,7 @@ export function onRequestOptions({ request }) {
 
 export async function onRequestGet({ request, env }) {
   const siteId = new URL(request.url).searchParams.get("site");
-  if (!PLATFORM_IDS.has(siteId)) {
+  if (!PRESENCE_IDS.has(siteId)) {
     return json(request, { ok: false, error: "invalid_site" }, 400);
   }
   if (!originMatchesSite(request, siteId)) {
@@ -90,7 +90,7 @@ export async function onRequestPost({ request, env }) {
 
   const siteId = payload?.siteId;
   const sessionId = payload?.sessionId;
-  if (!PLATFORM_IDS.has(siteId)) {
+  if (!PRESENCE_IDS.has(siteId)) {
     return json(request, { ok: false, error: "invalid_site" }, 400);
   }
   if (!originMatchesSite(request, siteId)) {
