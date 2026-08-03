@@ -41,6 +41,18 @@ test("到訪統計另接受 13 座考試站，但不開放學習服務權限", (
     "https://tvet-math.pages.dev",
   );
   assert.equal(
+    isAllowedPresenceOrigin("gsat-english", "https://gsat-english-bqe.pages.dev"),
+    "https://gsat-english-bqe.pages.dev",
+  );
+  assert.equal(
+    isAllowedPresenceOrigin("gsat-english", "https://gsat-english-lac.vercel.app"),
+    "https://gsat-english-lac.vercel.app",
+  );
+  assert.equal(
+    isAllowedPresenceOrigin("gsat-math", "https://gsat-math-8d833bc4.netlify.app"),
+    "https://gsat-math-8d833bc4.netlify.app",
+  );
+  assert.equal(
     isKnownPresenceOrigin("https://gsat-ziran.netlify.app"),
     "https://gsat-ziran.netlify.app",
   );
