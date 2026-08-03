@@ -102,6 +102,10 @@ self-learning-orbit/
 
 `platform-counter.js` 是 15 座自學平台共用的右下角元件，包含返回「自學星圖」的入口與公開計數器。各站只需傳入固定的 `data-site`，即可讀取 `/api/platform-presence`；資料共用同一個 D1，但依站點識別碼分開統計，不會和自學星圖入口或其他平台混算。
 
+## 13 個考科站共用公開計數服務
+
+`exam-counter.js` 提供會考 5 科、學測 5 科、統測 3 科共用的右下角匿名統計卡，顯示目前在線、今日到訪與累積到訪。各站以固定 `data-site` 呼叫同一個 `/api/platform-presence`，資料依站點分開統計；同一分頁使用 `sessionStorage` 維持匿名工作階段，不建立帳號或跨站追蹤。考科站統計自 2026 年 8 月 3 日起算。
+
 ## 15 站共用學習護照
 
 `platform-counter.js` 會依 `data-site` 載入 `learning-passport.js`，在各平台提供一致的學習紀錄中心：
