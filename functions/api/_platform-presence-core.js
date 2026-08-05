@@ -76,6 +76,61 @@ const platformHosts = {
     "reading-expedition.vercel.app",
     "reading-expedition.netlify.app",
   ],
+  "wenren-duel": [
+    "wenren-duel.pages.dev",
+    "wenren-duel.vercel.app",
+    "wenren-duel.netlify.app",
+  ],
+  "fanren-duel": [
+    "fanren-duel.pages.dev",
+    "fanren-duel.vercel.app",
+    "fanren-duel.netlify.app",
+  ],
+  "english-hero-island": [
+    "english-hero-island.pages.dev",
+    "english-hero-island.vercel.app",
+    "english-hero-island.netlify.app",
+  ],
+  "zizhu-monopoly": [
+    "zizhu-monopoly.pages.dev",
+    "zizhu-monopoly.vercel.app",
+    "zizhu-monopoly.netlify.app",
+  ],
+  "hanmo-jiangshan": [
+    "hanmo-jiangshan.pages.dev",
+    "hanmo-jiangshan.vercel.app",
+    "hanmo-jiangshan.netlify.app",
+  ],
+  "hanmo-wenshu": [
+    "hanmo-wenshu.pages.dev",
+    "hanmo-wenshu.vercel.app",
+    "hanmo-wenshu.netlify.app",
+  ],
+  "wanyao-wenshu": [
+    "wanyao-wenshu.pages.dev",
+    "wanyao-wenshu.vercel.app",
+    "wanyao-wenshu.netlify.app",
+  ],
+  "cap-exam-hub": [
+    "cap-exam-hub.pages.dev",
+    "cap-exam-hub.vercel.app",
+    "cap-exam-hub.netlify.app",
+  ],
+  "gsat-exam-galaxy": [
+    "gsat-exam-galaxy.pages.dev",
+    "gsat-exam-galaxy.vercel.app",
+    "gsat-exam-galaxy.netlify.app",
+  ],
+  "tvet-exam-galaxy": [
+    "tvet-exam-galaxy.pages.dev",
+    "tvet-exam-galaxy.vercel.app",
+    "tvet-exam-galaxy.netlify.app",
+  ],
+  "a3-workshop": [
+    "a3-workshop-20260523.pages.dev",
+    "a3-workshop-20260523.vercel.app",
+    "a3-workshop-20260523.netlify.app",
+  ],
 };
 
 const examHosts = {
