@@ -268,6 +268,13 @@
     `;
     document.body.append(host);
 
+    // React/Next hydration 可能把 body 裡外掛的節點清掉（英語英雄島實測）：
+    // 首 20 秒每秒檢查一次，被移除就重新掛回；之後由 update() 順帶保活。
+    const reattach = window.setInterval(() => {
+      if (!host.isConnected) document.body.append(host);
+    }, 1000);
+    window.setTimeout(() => window.clearInterval(reattach), 20000);
+
     const tools = shadow.querySelector(".tools");
     const toggle = shadow.querySelector(".tools-toggle");
     const toggleIcon = shadow.querySelector(".tools-toggle-icon");
@@ -333,6 +340,7 @@
     }
 
     const update = async () => {
+      if (!host.isConnected) document.body.append(host);
       if (pending || document.hidden) return;
       pending = true;
       lastRequestAt = Date.now();
