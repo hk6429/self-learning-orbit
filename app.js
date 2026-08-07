@@ -1,5 +1,17 @@
 const sites = [
   {
+    title: "六書造字堂",
+    group: "language",
+    subject: "國文 × 文字學",
+    caption: "漢字造字法練功站",
+    description: "用故事、閃卡、自測與文字學大師對戰，理解象形、指事、會意、形聲、轉注與假借。",
+    stage: "國小高年級～國中",
+    mode: "六書闖關",
+    duration: "建議 10–15 分鐘",
+    url: "https://liushu-quest.pages.dev/",
+    image: "./assets/previews/liushu-quest.webp",
+  },
+  {
     title: "文豪笑傳",
     group: "language",
     subject: "國文 × 文學",

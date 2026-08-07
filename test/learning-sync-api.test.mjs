@@ -51,7 +51,7 @@ test("同步端點拒絕其他網站冒用正式平台", async () => {
   });
 });
 
-test("同步預檢只開放已登錄的 15 站來源", async () => {
+test("同步預檢只開放已登錄的 16 站來源", async () => {
   const allowed = await onRequestOptions({
     request: new Request("https://self-learning-orbit.pages.dev/api/learning-sync", {
       method: "OPTIONS",
@@ -68,6 +68,18 @@ test("同步預檢只開放已登錄的 15 站來源", async () => {
     }),
   });
   assert.equal(blocked.status, 403);
+});
+
+test("六書造字堂正式來源可使用共用同步服務", async () => {
+  const liushuOrigin = "https://liushu-quest.pages.dev";
+  const allowed = await onRequestOptions({
+    request: new Request("https://self-learning-orbit.pages.dev/api/learning-sync", {
+      method: "OPTIONS",
+      headers: { Origin: liushuOrigin },
+    }),
+  });
+  assert.equal(allowed.status, 204);
+  assert.equal(allowed.headers.get("Access-Control-Allow-Origin"), liushuOrigin);
 });
 
 test("上傳只寫入加密快照並設定逾期時間", async () => {

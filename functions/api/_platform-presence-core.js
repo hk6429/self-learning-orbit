@@ -1,3 +1,5 @@
+import { SITE_CONFIGS } from "../../learning-passport-core.js";
+
 // 前端心跳已放寬為 20 分鐘一次（省 Pages Functions 免費額度），視窗需大於心跳間隔
 export const ONLINE_WINDOW_MS = 30 * 60 * 1000;
 
@@ -165,7 +167,7 @@ const examHosts = {
   "tvet-math": ["tvet-math.pages.dev", "tvet-math.vercel.app", "tvet-math.netlify.app"],
 };
 
-export const PLATFORM_IDS = new Set(Object.keys(platformHosts));
+export const PLATFORM_IDS = new Set(Object.keys(SITE_CONFIGS));
 export const PRESENCE_IDS = new Set([
   ...Object.keys(platformHosts),
   ...Object.keys(examHosts),
@@ -233,11 +235,17 @@ function knownOrigin(hostsBySite, origin) {
 }
 
 export function isAllowedPlatformOrigin(siteId, origin) {
+  if (!PLATFORM_IDS.has(siteId)) return null;
   return allowedOrigin(platformHosts, siteId, origin);
 }
 
 export function isKnownPlatformOrigin(origin) {
-  return knownOrigin(platformHosts, origin);
+  const learningHosts = Object.fromEntries(
+    [...PLATFORM_IDS]
+      .filter((siteId) => platformHosts[siteId])
+      .map((siteId) => [siteId, platformHosts[siteId]]),
+  );
+  return knownOrigin(learningHosts, origin);
 }
 
 export function isAllowedPresenceOrigin(siteId, origin) {

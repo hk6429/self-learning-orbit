@@ -1,6 +1,7 @@
 (() => {
   const script = document.currentScript;
   const siteId = script?.dataset.site;
+  const defaultOpen = script?.dataset.defaultOpen === "true";
   const endpoint =
     script?.dataset.endpoint ||
     "https://self-learning-orbit.pages.dev/api/platform-presence";
@@ -306,8 +307,18 @@
       toggleIcon.textContent = collapsed ? "☰" : "×";
       syncCompanionLaunchers();
     };
-    toggle.addEventListener("click", () => setCollapsed(!collapsed));
-    setCollapsed(true);
+    const discoveryKey = `danai-tools-discovered:${siteId}`;
+    let discovered = false;
+    try {
+      discovered = localStorage.getItem(discoveryKey) === "1";
+    } catch {
+      // Privacy settings may disable local storage.
+    }
+    toggle.addEventListener("click", () => {
+      setCollapsed(!collapsed);
+      try { localStorage.setItem(discoveryKey, "1"); } catch {}
+    });
+    setCollapsed(!(defaultOpen && !discovered));
 
     const values = Object.fromEntries(
       [...shadow.querySelectorAll("[data-count]")].map((element) => [

@@ -6,6 +6,9 @@ function config(id, name, include, exclude = []) {
 }
 
 export const SITE_CONFIGS = Object.freeze({
+  "liushu-quest": config("liushu-quest", "六書造字堂", [
+    { exact: "liushu.save.v1" },
+  ]),
   "wenxin-diaolong": config(
     "wenxin-diaolong",
     "文心雕龍",
@@ -225,6 +228,16 @@ export function summarizeProgress(entries, siteConfig) {
     metrics.push(metric("累積答題", answered));
     metrics.push(metric("答題正確率", answered ? `${Math.round((correct / answered) * 100)}%` : "0%"));
     metrics.push(metric("尋回章回", completed));
+  } else if (siteConfig?.id === "liushu-quest") {
+    const state = parseJson(entries["liushu.save.v1"]);
+    const answered = Number(state?.quiz?.answered) || 0;
+    const right = Number(state?.quiz?.right) || 0;
+    const mastered = Object.values(state?.cards || {}).filter(
+      (card) => Number(card?.box) >= 4 && Number(card?.right) >= 2,
+    ).length;
+    metrics.push(metric("精通字數", mastered));
+    metrics.push(metric("累積答題", answered));
+    metrics.push(metric("答題正確率", answered ? `${Math.round((right / answered) * 100)}%` : "0%"));
   } else if (siteConfig?.id === "vocab-duel") {
     const progress = parseJson(entries.vd_progress);
     const meta = parseJson(entries.vd_meta);

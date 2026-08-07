@@ -22,12 +22,18 @@ test("共用工具預設收合並用同一顆按鈕切換全部入口", () => {
   assert.match(script, /class="tools-toggle"/);
   assert.match(script, /aria-expanded="false"/);
   assert.match(script, /aria-label="展開學習工具"/);
-  assert.match(script, /setCollapsed\(true\)/);
+  assert.match(script, /setCollapsed\(!\(defaultOpen && !discovered\)\)/);
   assert.match(script, /toggle\.addEventListener\("click"/);
   assert.match(script, /"danai-learning-passport"/);
   assert.match(script, /"danai-family-classroom"/);
   assert.match(script, /companion\.hidden = collapsed/);
   assert.match(script, /MutationObserver/);
+});
+
+test("指定網站可在首次造訪展開工具，使用後記住已發現狀態", () => {
+  assert.match(script, /dataset\.defaultOpen === "true"/);
+  assert.match(script, /danai-tools-discovered:/);
+  assert.match(script, /localStorage\.setItem\(discoveryKey, "1"\)/);
 });
 
 test("收合按鈕保留可觸控尺寸、鍵盤焦點與減少動態支援", () => {
@@ -55,7 +61,7 @@ test("共用元件提供回到自學星圖的清楚入口", () => {
   assert.match(script, /\.orbit-home\s*\{[\s\S]*pointer-events:\s*auto/);
 });
 
-test("共用元件為 15 站載入學習護照與紀錄中心", () => {
+test("共用元件為 16 站載入學習護照與紀錄中心", () => {
   assert.match(script, /learning-passport\.js/);
   assert.match(script, /family-classroom\.js/);
   assert.match(script, /site=/);

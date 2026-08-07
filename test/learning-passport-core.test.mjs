@@ -12,9 +12,10 @@ import {
   summarizeProgress,
 } from "../learning-passport-core.js";
 
-test("學習護照涵蓋正式自學星圖的 15 座平台", () => {
-  assert.equal(Object.keys(SITE_CONFIGS).length, 15);
+test("學習護照涵蓋正式自學星圖的 16 座平台", () => {
+  assert.equal(Object.keys(SITE_CONFIGS).length, 16);
   for (const siteId of [
+    "liushu-quest",
     "wenxin-diaolong",
     "wenhao-xiaozhuan",
     "tulou-escape",
@@ -90,6 +91,25 @@ test("進度摘要提供已保存資料、學習量與最近活動", () => {
   assert.equal(summary.metrics.some((item) => item.label === "學習字詞"), true);
   assert.equal(summary.metrics.some((item) => item.label === "連續學習"), true);
   assert.equal(summary.lastActivity, "2026-07-29");
+});
+
+test("六書造字堂只同步主存檔並顯示精通、答題與正確率", () => {
+  const entries = selectProgressEntries({
+    "liushu.save.v1": JSON.stringify({
+      cards: {
+        c0001: { box: 4, right: 2 },
+        c0002: { box: 3, right: 5 },
+      },
+      quiz: { answered: 20, right: 15 },
+    }),
+    "danai-family-state:liushu-quest": "{}",
+  }, SITE_CONFIGS["liushu-quest"]);
+  assert.deepEqual(Object.keys(entries), ["liushu.save.v1"]);
+  assert.deepEqual(summarizeProgress(entries, SITE_CONFIGS["liushu-quest"]).metrics, [
+    { label: "精通字數", value: 1 },
+    { label: "累積答題", value: 20 },
+    { label: "答題正確率", value: "75%" },
+  ]);
 });
 
 test("文心雕龍護照摘要顯示累積答題、正確率與尋回章回", () => {
