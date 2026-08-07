@@ -1,6 +1,10 @@
 export const ONLINE_WINDOW_MS = 5 * 60 * 1000;
 
 const platformHosts = {
+  "liushu-quest": [
+    "liushu-quest.pages.dev",
+    "liushu-quest.netlify.app",
+  ],
   "wenxin-diaolong": [
     "wenxin-diaolong.pages.dev",
     "wenxin-diaolong.vercel.app",
