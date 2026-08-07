@@ -11,7 +11,7 @@
     passportScript.id = "danai-learning-passport-loader";
     passportScript.type = "module";
     passportScript.src =
-      `https://self-learning-orbit.pages.dev/learning-passport.js?v=6&site=${encodeURIComponent(siteId)}`;
+      `https://self-learning-orbit.pages.dev/learning-passport.js?v=7&site=${encodeURIComponent(siteId)}`;
     document.head.append(passportScript);
   }
 
@@ -20,7 +20,7 @@
     hubScript.id = "danai-family-classroom-loader";
     hubScript.type = "module";
     hubScript.src =
-      `https://self-learning-orbit.pages.dev/family-classroom.js?v=6&site=${encodeURIComponent(siteId)}`;
+      `https://self-learning-orbit.pages.dev/family-classroom.js?v=7&site=${encodeURIComponent(siteId)}`;
     document.head.append(hubScript);
   }
 

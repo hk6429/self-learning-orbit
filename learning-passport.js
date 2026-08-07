@@ -233,6 +233,8 @@ function mountPassport() {
   }
 
   async function post(payload) {
+    // 背景分頁一律不打 API（省 Pages Functions 免費額度）
+    if (document.hidden) throw new Error("tab_hidden");
     const response = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

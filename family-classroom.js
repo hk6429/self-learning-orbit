@@ -9,7 +9,7 @@ import {
   sanitizeFamilyState,
   switchFamilyProfile,
   updateActiveSnapshot,
-} from "./family-classroom-core.js?v=6";
+} from "./family-classroom-core.js?v=7";
 import {
   SITE_CONFIGS,
   decryptSnapshot,
@@ -18,7 +18,7 @@ import {
   normalizePassportCode,
   passportSyncId,
   selectProgressEntries,
-} from "./learning-passport-core.js?v=6";
+} from "./learning-passport-core.js?v=7";
 import {
   NATIVE_CLASSROOM_SITES,
   chooseNativeQuestion,
@@ -26,7 +26,7 @@ import {
   reportsToCsv,
   sanitizeClassroomReports,
   sanitizeQuestionBank,
-} from "./teacher-tools-core.js?v=6";
+} from "./teacher-tools-core.js?v=7";
 
 const params = new URL(import.meta.url).searchParams;
 const siteConfig = SITE_CONFIGS[params.get("site")];
@@ -533,6 +533,8 @@ function mountHub() {
   };
 
   async function classroomPost(payload) {
+    // 背景分頁一律不打 API（省 Pages Functions 免費額度）
+    if (document.hidden) throw new Error("tab_hidden");
     const response = await fetch(classroomEndpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -544,6 +546,8 @@ function mountHub() {
   }
 
   async function cheersPost(payload) {
+    // 背景分頁一律不打 API（省 Pages Functions 免費額度）
+    if (document.hidden) throw new Error("tab_hidden");
     const response = await fetch(cheersEndpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
