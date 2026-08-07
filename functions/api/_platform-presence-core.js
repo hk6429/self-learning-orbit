@@ -1,4 +1,5 @@
-export const ONLINE_WINDOW_MS = 5 * 60 * 1000;
+// 前端心跳已放寬為 10 分鐘一次（省 Pages Functions 免費額度），視窗需大於心跳間隔
+export const ONLINE_WINDOW_MS = 15 * 60 * 1000;
 
 const platformHosts = {
   "liushu-quest": [

@@ -163,9 +163,10 @@
     };
 
     update();
-    window.setInterval(update, 3 * 60 * 1000);
+    // 免費額度每日 10 萬次上限：心跳 10 分鐘一次即可（online 視窗同步放寬到 15 分鐘）
+    window.setInterval(update, 10 * 60 * 1000);
     document.addEventListener("visibilitychange", () => {
-      if (!document.hidden && Date.now() - lastRequestAt > 60_000) update();
+      if (!document.hidden && Date.now() - lastRequestAt > 5 * 60 * 1000) update();
     });
   };
 

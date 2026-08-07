@@ -9,7 +9,7 @@ import {
   sanitizeFamilyState,
   switchFamilyProfile,
   updateActiveSnapshot,
-} from "./family-classroom-core.js?v=4";
+} from "./family-classroom-core.js?v=5";
 import {
   SITE_CONFIGS,
   decryptSnapshot,
@@ -18,7 +18,7 @@ import {
   normalizePassportCode,
   passportSyncId,
   selectProgressEntries,
-} from "./learning-passport-core.js?v=4";
+} from "./learning-passport-core.js?v=5";
 import {
   NATIVE_CLASSROOM_SITES,
   chooseNativeQuestion,
@@ -26,7 +26,7 @@ import {
   reportsToCsv,
   sanitizeClassroomReports,
   sanitizeQuestionBank,
-} from "./teacher-tools-core.js?v=4";
+} from "./teacher-tools-core.js?v=5";
 
 const params = new URL(import.meta.url).searchParams;
 const siteConfig = SITE_CONFIGS[params.get("site")];
@@ -754,6 +754,7 @@ function mountHub() {
   }
 
   async function pollCheers() {
+    if (document.hidden) return;
     const code = currentPassportCode();
     if (!isValidPassportCode(code)) return;
     try {
@@ -898,7 +899,7 @@ function mountHub() {
   }
 
   async function pollTeacher() {
-    if (!teacherSession?.code) return;
+    if (document.hidden || !teacherSession?.code) return;
     try {
       const data = await classroomPost({
         action: "poll", siteId: siteConfig.id,
@@ -911,7 +912,7 @@ function mountHub() {
   }
 
   async function pollStudent() {
-    if (!studentSession?.code) return;
+    if (document.hidden || !studentSession?.code) return;
     try {
       const data = await classroomPost({
         action: "poll", siteId: siteConfig.id, code: studentSession.code,
@@ -1306,7 +1307,8 @@ function mountHub() {
     teacherPollTimer = window.setInterval(pollTeacher, 2500);
     studentPollTimer = window.setInterval(pollStudent, 2500);
   }
-  cheerPollTimer = window.setInterval(pollCheers, 5000);
+  // 加油訊息非即時需求：60 秒輪詢一次即可（省 Pages Functions 免費額度）
+  cheerPollTimer = window.setInterval(pollCheers, 60 * 1000);
   clockTimer = window.setInterval(() => {
     const timer = shadow.querySelector("[data-project-timer]");
     if (!teacherRoom?.endsAt || teacherRoom.status !== "open") {
