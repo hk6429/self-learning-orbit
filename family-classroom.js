@@ -9,7 +9,7 @@ import {
   sanitizeFamilyState,
   switchFamilyProfile,
   updateActiveSnapshot,
-} from "./family-classroom-core.js?v=5";
+} from "./family-classroom-core.js?v=6";
 import {
   SITE_CONFIGS,
   decryptSnapshot,
@@ -18,7 +18,7 @@ import {
   normalizePassportCode,
   passportSyncId,
   selectProgressEntries,
-} from "./learning-passport-core.js?v=5";
+} from "./learning-passport-core.js?v=6";
 import {
   NATIVE_CLASSROOM_SITES,
   chooseNativeQuestion,
@@ -26,7 +26,7 @@ import {
   reportsToCsv,
   sanitizeClassroomReports,
   sanitizeQuestionBank,
-} from "./teacher-tools-core.js?v=5";
+} from "./teacher-tools-core.js?v=6";
 
 const params = new URL(import.meta.url).searchParams;
 const siteConfig = SITE_CONFIGS[params.get("site")];
@@ -1307,8 +1307,8 @@ function mountHub() {
     teacherPollTimer = window.setInterval(pollTeacher, 2500);
     studentPollTimer = window.setInterval(pollStudent, 2500);
   }
-  // 加油訊息非即時需求：60 秒輪詢一次即可（省 Pages Functions 免費額度）
-  cheerPollTimer = window.setInterval(pollCheers, 60 * 1000);
+  // 加油訊息非即時需求：600 秒輪詢一次即可（省 Pages Functions 免費額度）
+  cheerPollTimer = window.setInterval(pollCheers, 600 * 1000);
   clockTimer = window.setInterval(() => {
     const timer = shadow.querySelector("[data-project-timer]");
     if (!teacherRoom?.endsAt || teacherRoom.status !== "open") {

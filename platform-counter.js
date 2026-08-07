@@ -11,7 +11,7 @@
     passportScript.id = "danai-learning-passport-loader";
     passportScript.type = "module";
     passportScript.src =
-      `https://self-learning-orbit.pages.dev/learning-passport.js?v=5&site=${encodeURIComponent(siteId)}`;
+      `https://self-learning-orbit.pages.dev/learning-passport.js?v=6&site=${encodeURIComponent(siteId)}`;
     document.head.append(passportScript);
   }
 
@@ -20,7 +20,7 @@
     hubScript.id = "danai-family-classroom-loader";
     hubScript.type = "module";
     hubScript.src =
-      `https://self-learning-orbit.pages.dev/family-classroom.js?v=5&site=${encodeURIComponent(siteId)}`;
+      `https://self-learning-orbit.pages.dev/family-classroom.js?v=6&site=${encodeURIComponent(siteId)}`;
     document.head.append(hubScript);
   }
 
@@ -369,10 +369,10 @@
     };
 
     update();
-    // 免費額度每日 10 萬次上限：心跳 10 分鐘一次即可（online 視窗同步放寬到 15 分鐘）
-    window.setInterval(update, 10 * 60 * 1000);
+    // 免費額度每日 10 萬次上限：心跳 20 分鐘一次即可（online 視窗同步放寬到 30 分鐘）
+    window.setInterval(update, 20 * 60 * 1000);
     document.addEventListener("visibilitychange", () => {
-      if (!document.hidden && Date.now() - lastRequestAt > 5 * 60 * 1000) update();
+      if (!document.hidden && Date.now() - lastRequestAt > 10 * 60 * 1000) update();
     });
   };
 
