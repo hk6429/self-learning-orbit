@@ -191,6 +191,18 @@ const sites = [
     url: "https://wenxin-diaolong.pages.dev/",
     image: "./assets/previews/wenxin-diaolong.webp",
   },
+  {
+    title: "句讀學堂",
+    group: "language",
+    subject: "國文 × 標點句讀",
+    caption: "大觀園句讀練功",
+    description: "從國小到高中分級練習符號、標點運用與斷句，搭配弱點複習、句讀四靈及回合制對戰。",
+    stage: "國小～高中",
+    mode: "標點練功",
+    duration: "建議 5–15 分鐘",
+    url: "https://judou-academy.pages.dev/",
+    image: "./assets/previews/judou-academy.webp",
+  },
 ];
 
 const stage = document.querySelector("#orbit-stage");

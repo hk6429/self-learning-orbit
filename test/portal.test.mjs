@@ -6,7 +6,7 @@ const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
 const css = await readFile(new URL("../styles.css", import.meta.url), "utf8");
 const app = await readFile(new URL("../app.js", import.meta.url), "utf8");
 
-test("入口包含分類、快速選站、總覽、暫停與 16 個網站", () => {
+test("入口包含分類、快速選站、總覽、暫停與 17 個網站", () => {
   assert.equal((html.match(/class="filter-chip/g) ?? []).length, 5);
   assert.match(html, /id="play-toggle"/);
   assert.match(html, /id="guide-dialog"/);
@@ -15,11 +15,13 @@ test("入口包含分類、快速選站、總覽、暫停與 16 個網站", () =
   assert.match(html, /data-audience="parent"/);
   assert.match(html, /入口不建立帳號/);
   const siteUrls = [...app.matchAll(/url: "(https:\/\/[^"]+)"/g)].map((match) => match[1]);
-  assert.equal(siteUrls.length, 16);
-  assert.equal(new Set(siteUrls).size, 16);
+  assert.equal(siteUrls.length, 17);
+  assert.equal(new Set(siteUrls).size, 17);
   assert.match(app, /title: "文心雕龍"/);
   assert.match(app, /title: "梁山閱征記"/);
   assert.match(app, /reading-expedition-2u1\.pages\.dev/);
+  assert.match(app, /title: "句讀學堂"/);
+  assert.match(app, /judou-academy\.pages\.dev/);
 });
 
 test("幫我選一站左側提供自學複利護照安全外連", () => {
@@ -29,18 +31,18 @@ test("幫我選一站左側提供自學複利護照安全外連", () => {
   );
 });
 
-test("16 座網站都有年段、玩法與建議時間", () => {
-  assert.equal((app.match(/\n    stage: "/g) ?? []).length, 16);
-  assert.equal((app.match(/\n    mode: "/g) ?? []).length, 16);
-  assert.equal((app.match(/\n    duration: "/g) ?? []).length, 16);
+test("17 座網站都有年段、玩法與建議時間", () => {
+  assert.equal((app.match(/\n    stage: "/g) ?? []).length, 17);
+  assert.equal((app.match(/\n    mode: "/g) ?? []).length, 17);
+  assert.equal((app.match(/\n    duration: "/g) ?? []).length, 17);
   assert.match(app, /renderDecisionTags/);
 });
 
 test("縮圖全部使用 WebP，且檔案完整", async () => {
   const previewDir = new URL("../assets/previews/", import.meta.url);
   const files = (await readdir(previewDir)).filter((name) => name.endsWith(".webp"));
-  assert.equal(files.length, 16);
-  assert.equal((app.match(/\.webp"/g) ?? []).length, 16);
+  assert.equal(files.length, 17);
+  assert.equal((app.match(/\.webp"/g) ?? []).length, 17);
 
   for (const file of files) {
     const details = await stat(new URL(file, previewDir));
