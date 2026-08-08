@@ -22,6 +22,7 @@ function responseHeaders(request) {
     ...(origin
       ? {
           "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Max-Age": "86400",
           "Access-Control-Allow-Methods": "POST, OPTIONS",
           "Access-Control-Allow-Origin": origin,
           Vary: "Origin",

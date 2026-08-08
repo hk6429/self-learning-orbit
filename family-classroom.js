@@ -537,7 +537,6 @@ function mountHub() {
     if (document.hidden) throw new Error("tab_hidden");
     const response = await fetch(classroomEndpoint, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
     const data = await response.json().catch(() => ({}));
@@ -550,7 +549,6 @@ function mountHub() {
     if (document.hidden) throw new Error("tab_hidden");
     const response = await fetch(cheersEndpoint, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
     const data = await response.json().catch(() => ({}));
