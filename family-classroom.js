@@ -545,15 +545,10 @@ function mountHub() {
   }
 
   async function cheersPost(payload) {
-    // 背景分頁一律不打 API（省 Pages Functions 免費額度）
-    if (document.hidden) throw new Error("tab_hidden");
-    const response = await fetch(cheersEndpoint, {
-      method: "POST",
-      body: JSON.stringify(payload),
-    });
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok || !data.ok) throw new Error(data.error || "cheers_failed");
-    return data;
+    // 2026-08-08 跨裝置加油同步整個下架（免費額度失血主因）：不打任何網路、
+    // 回假成功——加油仍記在本機，只是不再跨裝置同步；伺服器端點已移除
+    void payload;
+    return { ok: true, events: [] };
   }
 
   function randomId(prefix) {
